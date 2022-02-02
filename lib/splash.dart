@@ -47,9 +47,7 @@ class _SplashState extends State<Splash> {
               padding: const EdgeInsets.all(16.0),
               child: Text(
                 widget.title,
-                style: GoogleFonts.getFont("Bebas Neue").copyWith(
-                  fontSize: 64,
-                ),
+                style: Theme.of(context).textTheme.headline2,
                 textAlign: TextAlign.center,
               ),
               alignment: Alignment.center,

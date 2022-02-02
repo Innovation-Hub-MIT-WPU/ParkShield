@@ -1,11 +1,16 @@
 import 'package:ParkShield/globals.dart';
-import 'package:ParkShield/src/homepage.dart';
-import 'package:ParkShield/src/login_register_page.dart';
+import 'package:ParkShield/screens/homepage.dart';
+import 'package:ParkShield/screens/login_register_page.dart';
 import 'package:flutter/material.dart';
 import 'package:ParkShield/splash.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const MyApp());
 }
 
@@ -19,15 +24,11 @@ class MyApp extends StatelessWidget {
       title: APP_TITLE,
       theme: ThemeData(
         brightness: Brightness.light,
-        textTheme: GoogleFonts.notoSansMayanNumeralsTextTheme(
-          Theme.of(context).textTheme,
-        ),
+        textTheme: DEFAULT_TEXT_THEME,
       ),
       darkTheme: ThemeData(
         brightness: Brightness.dark,
-        textTheme: GoogleFonts.notoSansMayanNumeralsTextTheme(
-          Theme.of(context).textTheme,
-        ),
+        textTheme: DEFAULT_TEXT_THEME,
       ),
       themeMode: ThemeMode.light,
       initialRoute: '/',

@@ -1,10 +1,9 @@
-import 'package:ParkShield/utils/List/list_operations.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:ParkShield/src/drawer.dart';
+import 'package:ParkShield/widgets/drawer.dart';
 import 'package:ParkShield/widgets/tasks_view.dart';
-import 'package:ParkShield/utils/FileHandling/file_handling.dart';
+import 'package:ParkShield/services/FileHandling/file_handling.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key, required this.title}) : super(key: key);
