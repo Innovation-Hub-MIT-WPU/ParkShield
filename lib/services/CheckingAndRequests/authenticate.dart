@@ -10,50 +10,53 @@ class AuthService {
   }
 
   // email pass sign in
-  Future<String> signInUser(
+  Future<List<dynamic>> signInUser(
       {required String email, required String password}) async {
     try {
-      UserCredential userCredential =
-          await FirebaseAuth.instance.signInWithEmailAndPassword(
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
-        return 'No user found for that email';
+        return [1, 'No user found for that email'];
       } else if (e.code == 'wrong-password') {
-        return 'Wrong password provided for that user';
+        return [2, 'Wrong password provided for that user'];
       }
     }
     // Successful sign in
-    return '';
+    return [0, ''];
   }
 
   // new register
-  Future<String> registerUser(
+  Future<List<dynamic>> registerUser(
       {required String email, required String password}) async {
     try {
-      UserCredential userCredential =
-          await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
-        return 'The password provided is too weak';
+        return [2, 'The password provided is too weak'];
       } else if (e.code == 'email-already-in-use') {
-        return 'The account already exists for that email';
+        return [1, 'The account already exists for that email'];
       }
     } catch (e) {
       print(e);
-      return e.toString();
+      return [-1, e.toString()];
     }
     // Successful registration
-    return '';
+    return [0, ''];
   }
+}
 
-  Future<void> signOut() async {
-    await _auth.signOut();
-    return;
-  }
+bool checkLoggedIn() {
+  User? user = FirebaseAuth.instance.currentUser;
+  return user != null;
+}
+
+Future<bool> signOut() async {
+  await FirebaseAuth.instance.signOut();
+  return !checkLoggedIn();
 }

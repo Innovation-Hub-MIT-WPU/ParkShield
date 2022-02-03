@@ -35,6 +35,20 @@ class _LoginTabState extends State<LoginTab> {
     setState(() {});
   }
 
+  Future<void> signIn() async {
+    List<dynamic> result = await auth.signInUser(
+        email: emailController.text, password: passwordController.text);
+    print(result);
+    if (result[0] == 1) {
+      errorTextEmail = result[1];
+    } else if (result[0] == 2) {
+      errorTextPassword = result[1];
+    } else if (result[0] == 0) {
+      Navigator.pushReplacementNamed(context, '/homepage');
+    }
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -152,9 +166,7 @@ class _LoginTabState extends State<LoginTab> {
                 ),
               ),
               onTap: () async {
-                await auth.signInUser(
-                    email: emailController.text,
-                    password: passwordController.text);
+                signIn();
               },
             ),
           ),

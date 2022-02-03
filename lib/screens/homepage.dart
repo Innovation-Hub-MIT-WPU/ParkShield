@@ -36,7 +36,9 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: Text(
           widget.title,
-          style: GoogleFonts.getFont('Lato'),
+          style: Theme.of(context).textTheme.bodyText1!.copyWith(
+                fontSize: 32,
+              ),
         ),
       ),
       floatingActionButton: FloatingActionButton(

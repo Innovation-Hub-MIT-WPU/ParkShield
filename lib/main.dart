@@ -1,10 +1,12 @@
+import 'package:flutter/material.dart';
+
 import 'package:ParkShield/globals.dart';
 import 'package:ParkShield/screens/homepage.dart';
 import 'package:ParkShield/screens/login_register_page.dart';
-import 'package:flutter/material.dart';
 import 'package:ParkShield/splash.dart';
+
 import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
+import 'package:ParkShield/services/CheckingAndRequests/firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

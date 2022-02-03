@@ -37,8 +37,64 @@ class _RegisterTabState extends State<RegisterTab> {
     setState(() {});
   }
 
+  Future<void> register() async {
+    List<dynamic> result = await auth.registerUser(
+        email: emailController.text, password: passwordController.text);
+    print(result);
+    if (result[0] == 1) {
+      errorTextEmail = result[1];
+    } else if (result[0] == 2) {
+      errorTextPassword = result[1];
+    } else if (result[0] == -1) {
+      AlertDialog(
+        title: const Text('Error occurred!'),
+        content: SingleChildScrollView(
+          child: ListBody(
+            children: <Widget>[
+              Text(result[1]),
+            ],
+          ),
+        ),
+        actions: <Widget>[
+          TextButton(
+            child: const Text('Okay'),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      );
+    } else if (result[0] == 0) {
+      AlertDialog(
+        title: const Text('Successfully registered!'),
+        content: SingleChildScrollView(
+          child: ListBody(
+            children: const <Widget>[
+              Text('Now sign in to continue!'),
+            ],
+          ),
+        ),
+        actions: <Widget>[
+          TextButton(
+            child: const Text('Okay'),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      );
+    }
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
+    Divider divider = Divider(
+      color: Colors.grey.shade400,
+      indent: widget.screenWidth / 40,
+      endIndent: widget.screenWidth / 40,
+    );
+
     return Column(
       children: [
         Padding(
@@ -87,11 +143,7 @@ class _RegisterTabState extends State<RegisterTab> {
                       ),
                     ),
                   ),
-                  Divider(
-                    color: Colors.grey.shade400,
-                    indent: widget.screenWidth / 40,
-                    endIndent: widget.screenWidth / 40,
-                  ),
+                  divider,
 
                   // Password input field
                   Padding(
@@ -128,11 +180,7 @@ class _RegisterTabState extends State<RegisterTab> {
                       ),
                     ),
                   ),
-                  Divider(
-                    color: Colors.grey.shade400,
-                    indent: widget.screenWidth / 40,
-                    endIndent: widget.screenWidth / 40,
-                  ),
+                  divider,
 
                   // Confirm password input field
                   Padding(
@@ -194,12 +242,8 @@ class _RegisterTabState extends State<RegisterTab> {
                   ),
                 ),
               ),
-              onTap: () async {
-                print(await auth.registerUser(
-                    email: emailController.text,
-                    password: passwordController.text));
-                setState(() {});
-                ;
+              onTap: () {
+                register();
               },
             ),
           ),

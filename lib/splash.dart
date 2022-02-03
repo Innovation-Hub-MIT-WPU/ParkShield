@@ -1,7 +1,6 @@
-import 'package:flutter/widgets.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/material.dart';
 import 'package:ParkShield/globals.dart';
+import 'package:ParkShield/services/CheckingAndRequests/authenticate.dart';
 
 class Splash extends StatefulWidget {
   const Splash({Key? key, required this.title}) : super(key: key);
@@ -21,7 +20,11 @@ class _SplashState extends State<Splash> {
   // Delay to go to landing page
   _navigatehome() async {
     await Future.delayed(const Duration(milliseconds: 1500), () {});
-    Navigator.pushReplacementNamed(context, '/login_register_page');
+    if (checkLoggedIn()) {
+      Navigator.pushReplacementNamed(context, '/homepage');
+    } else {
+      Navigator.pushReplacementNamed(context, '/login_register_page');
+    }
   }
 
   @override
