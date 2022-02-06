@@ -1,14 +1,43 @@
-import 'package:ParkShield/services/CheckingAndRequests/authenticate.dart';
+import 'package:ParkShield/services/Authentication/authenticate.dart';
+import 'package:ParkShield/services/DataTransact/requesting.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-class MainDrawer extends StatefulWidget {
-  const MainDrawer({Key? key}) : super(key: key);
+class HomePageDrawer extends StatefulWidget {
+  const HomePageDrawer({Key? key}) : super(key: key);
 
   @override
-  State<MainDrawer> createState() => _MainDrawerState();
+  State<HomePageDrawer> createState() => _HomePageDrawerState();
 }
 
-class _MainDrawerState extends State<MainDrawer> {
+class _HomePageDrawerState extends State<HomePageDrawer> {
+  late String profileImageLink;
+  late Map<String, dynamic> vehiclesInformation;
+  late Map<String, dynamic> userInfo;
+
+  @override
+  void initState() {
+    profileImageLink = "https://i.ibb.co/Ttp2tmY/20180419-175104.jpg";
+    vehiclesInformation = {
+      'Vehicle 1': {
+        'status': 'Connected',
+        'Nominees': {},
+      },
+      'Vehicle 2': {
+        'status': 'Not connected',
+        'Nominees': {},
+      },
+      'Vehicle 3': {
+        'status': 'Not connected',
+        'Nominees': {},
+      },
+    };
+    super.initState();
+  }
+
+  void updateInformation() {}
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -16,16 +45,27 @@ class _MainDrawerState extends State<MainDrawer> {
       child: SingleChildScrollView(
         child: Column(
           children: [
-            DrawerHeader(
-              child: Center(
-                child: Image.network(
-                    "https://i.ibb.co/Ttp2tmY/20180419-175104.jpg"),
-              ),
+            StreamBuilder<DocumentSnapshot>(
+              stream: userDocumentReference().snapshots(),
+              builder: (BuildContext context,
+                  AsyncSnapshot<DocumentSnapshot> snapshot) {
+                if (snapshot.hasData) {
+                  userInfo = snapshot.data!.data() as Map<String, dynamic>;
+                  return UserAccountsDrawerHeader(
+                    accountName: const Text(''),
+                    accountEmail: Text(userInfo['email']),
+                  );
+                } else if (snapshot.hasError) {
+                  return const Text('There was an error...');
+                } else {
+                  return const CircularProgressIndicator();
+                }
+              },
             ),
             Ink(
               child: InkWell(
                 child: SizedBox(
-                  width: screenWidth / 3,
+                  width: screenWidth / 5,
                   child: Card(
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(screenWidth / 100),

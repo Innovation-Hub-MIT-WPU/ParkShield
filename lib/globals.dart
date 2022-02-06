@@ -24,4 +24,9 @@ const DEFAULT_TEXT_THEME = TextTheme(
     fontSize: 26,
     color: Colors.grey,
   ),
+  button: TextStyle(
+    fontFamily: 'SakkalMajalla',
+    fontSize: 20,
+    color: Colors.grey,
+  ),
 );
