@@ -10,10 +10,11 @@ IoT-based vehicle protection system to secure one's parked automobiles through a
 
 ## Screenshots
 
-![Regstration](https://user-images.githubusercontent.com/74127653/153258210-8cfba60b-b7c1-457c-985c-2991e068c343.jpg)
-![Login](https://user-images.githubusercontent.com/74127653/153258200-feaf1e4b-d341-4e75-bb5f-7f471e8648bf.jpg)
-![Hamburger Menu](https://user-images.githubusercontent.com/74127653/153258199-20a8273e-3d5b-496c-ae8d-d1b05b4a9ddf.jpg)
-![WiFi Detection](https://user-images.githubusercontent.com/74127653/153258193-3bdb5ca4-87a9-474d-a440-d91f766c5c8d.jpg)
-![Nominee Addition](https://user-images.githubusercontent.com/74127653/153258205-2b3546ce-db7a-49a9-9f76-eed6dffc79cc.jpg)
-![Nominee Added](https://user-images.githubusercontent.com/74127653/153258202-027c4524-2171-478f-ab97-68d664a8ac89.jpg)
+![Register](https://user-images.githubusercontent.com/74127653/153259682-6edd8013-cbc4-4007-9781-ca37d904805a.jpg)
+![Login](https://user-images.githubusercontent.com/74127653/153259670-68202dfd-9b6c-4870-a110-defa341ec187.jpg)
+![Profile](https://user-images.githubusercontent.com/74127653/153259677-5476920b-3ce8-4287-af0a-0873afe3f38a.jpg)
+![Hamburger Menu](https://user-images.githubusercontent.com/74127653/153259666-bdbc8ec1-ca8b-4f2b-95a7-700c6f78fec9.jpg)
+![WiFi Scanning](https://user-images.githubusercontent.com/74127653/153259657-097ed06c-31d8-4dc1-a3aa-64c02a092654.jpg)
+![Nominee addition](https://user-images.githubusercontent.com/74127653/153259673-5450f6d4-4bfa-4b61-a002-7adb6cb3f449.jpg)
+![Nominee Added](https://user-images.githubusercontent.com/74127653/153259672-2107a350-2650-4e44-b8e6-97d5dc111bf2.jpg)
 
