@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:ParkShield/services/DataTransact/requesting.dart';
+import 'package:ParkShield/services/Requests/firestore_requesting.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;

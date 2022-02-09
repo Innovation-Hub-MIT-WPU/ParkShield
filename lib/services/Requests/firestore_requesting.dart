@@ -1,12 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-Stream userDocumentCollectionStream({required String document}) {
+CollectionReference userDocumentCollectionStream({required String collection}) {
   return FirebaseFirestore.instance
       .collection('users')
       .doc(FirebaseAuth.instance.currentUser!.uid)
-      .collection(document)
-      .snapshots();
+      .collection(collection);
 }
 
 CollectionReference usersCollectionReference() {

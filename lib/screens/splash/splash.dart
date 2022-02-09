@@ -21,7 +21,7 @@ class _SplashState extends State<Splash> {
   _navigatehome() async {
     await Future.delayed(const Duration(milliseconds: 1500), () {});
     if (checkLoggedIn()) {
-      Navigator.pushReplacementNamed(context, '/homepage');
+      Navigator.pushReplacementNamed(context, '/profile_page');
     } else {
       Navigator.pushReplacementNamed(context, '/login_register_page');
     }
@@ -36,7 +36,7 @@ class _SplashState extends State<Splash> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           Center(
-            child: Container(
+            child: SizedBox(
               height: MediaQuery.of(context).size.width / 3,
               child: Image.asset(
                 APP_ICON,

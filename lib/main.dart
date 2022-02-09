@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 
 import 'package:ParkShield/globals.dart';
-import 'package:ParkShield/screens/home/homepage.dart';
 import 'package:ParkShield/screens/login_register/login_register_page.dart';
 import 'package:ParkShield/screens/splash/splash.dart';
+import 'package:ParkShield/screens/nominee/nominee_page.dart';
+import 'package:ParkShield/screens/profile/profile_page.dart';
+import 'package:ParkShield/screens/scan_vehicles/scan_vehicles_page.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:ParkShield/services/Authentication/firebase_options.dart';
@@ -38,12 +40,12 @@ class MyApp extends StatelessWidget {
         '/': (context) => const Splash(
               title: APP_TITLE,
             ),
-        '/homepage': (context) => const HomePage(
-              title: APP_TITLE,
-            ),
         '/login_register_page': (context) => const LoginPage(
               title: APP_TITLE,
             ),
+        '/profile_page': (context) => const ProfilePage(),
+        '/nominee_page': (context) => const NomineePage(),
+        '/scan_vehicles_page': (context) => const ScanVehiclesPage(),
       },
     );
   }

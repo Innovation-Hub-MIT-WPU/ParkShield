@@ -1,5 +1,4 @@
 import 'package:ParkShield/services/Authentication/authenticate.dart';
-import 'package:ParkShield/widgets/alerts.dart';
 import 'package:flutter/material.dart';
 
 class LoginTab extends StatefulWidget {
@@ -48,7 +47,7 @@ class _LoginTabState extends State<LoginTab> {
     } else if (result[0] == 2) {
       errorTextPassword = result[1];
     } else if (result[0] == 0) {
-      Navigator.pushReplacementNamed(context, '/homepage');
+      Navigator.pushReplacementNamed(context, '/profile_page');
     }
     setState(() {});
   }

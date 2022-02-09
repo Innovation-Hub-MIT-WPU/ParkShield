@@ -1,46 +1,39 @@
-import 'package:ParkShield/services/Authentication/authenticate.dart';
-import 'package:ParkShield/services/DataTransact/requesting.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:ParkShield/globals.dart';
+import 'package:ParkShield/services/Requests/firestore_requesting.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-class HomePageDrawer extends StatefulWidget {
-  const HomePageDrawer({Key? key}) : super(key: key);
+class CommonDrawer extends StatefulWidget {
+  const CommonDrawer({Key? key}) : super(key: key);
 
   @override
-  State<HomePageDrawer> createState() => _HomePageDrawerState();
+  State<CommonDrawer> createState() => _CommonDrawerState();
 }
 
-class _HomePageDrawerState extends State<HomePageDrawer> {
+class _CommonDrawerState extends State<CommonDrawer> {
   late String profileImageLink;
-  late Map<String, dynamic> vehiclesInformation;
+  List<List<String>> routesInfo = [
+    ['Profile', '/profile_page'],
+    ['Scan Vehicles', '/test'],
+    ['Nominees', '/nominee_page'],
+    ['Logout', '/login_register_page'],
+  ];
   late Map<String, dynamic> userInfo;
 
   @override
   void initState() {
     profileImageLink = "https://i.ibb.co/Ttp2tmY/20180419-175104.jpg";
-    vehiclesInformation = {
-      'Vehicle 1': {
-        'status': 'Connected',
-        'Nominees': {},
-      },
-      'Vehicle 2': {
-        'status': 'Not connected',
-        'Nominees': {},
-      },
-      'Vehicle 3': {
-        'status': 'Not connected',
-        'Nominees': {},
-      },
-    };
+
     super.initState();
   }
 
-  void updateInformation() {}
-
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
+    precacheImage(const NetworkImage(DEFAULT_PROFILE_PICTURE), context);
+
+    final num screenWidth = MediaQuery.of(context).size.width;
+    final num screenHeight = MediaQuery.of(context).size.height;
+
     return Drawer(
       child: SingleChildScrollView(
         child: Column(
@@ -52,6 +45,12 @@ class _HomePageDrawerState extends State<HomePageDrawer> {
                 if (snapshot.hasData) {
                   userInfo = snapshot.data!.data() as Map<String, dynamic>;
                   return UserAccountsDrawerHeader(
+                    currentAccountPicture: CircleAvatar(
+                      radius: screenWidth / 4,
+                      backgroundImage: const NetworkImage(
+                        DEFAULT_PROFILE_PICTURE,
+                      ),
+                    ),
                     accountName: const Text(''),
                     accountEmail: Text(userInfo['email']),
                   );
@@ -62,33 +61,38 @@ class _HomePageDrawerState extends State<HomePageDrawer> {
                 }
               },
             ),
-            Ink(
-              child: InkWell(
-                child: SizedBox(
-                  width: screenWidth / 5,
-                  child: Card(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(screenWidth / 100),
-                    ),
-                    child: FittedBox(
-                      fit: BoxFit.fitWidth,
-                      child: Text(
-                        'Logout',
-                        style: Theme.of(context).textTheme.headline1,
+            Column(
+              children: routesInfo.map(
+                (List l) {
+                  return Ink(
+                    child: InkWell(
+                      child: SizedBox(
+                        width: screenWidth / 1,
+                        height: screenHeight / 10,
+                        child: Card(
+                          shape: RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.circular(screenWidth / 100),
+                          ),
+                          child: ListTile(
+                            title: Text(
+                              l[0],
+                              style: Theme.of(context).textTheme.headline3,
+                            ),
+                          ),
+                        ),
                       ),
+                      onTap: () async {
+                        Navigator.pushReplacementNamed(
+                          context,
+                          l[1],
+                        );
+                      },
                     ),
-                  ),
-                ),
-                onTap: () async {
-                  if (await signOut()) {
-                    Navigator.pushReplacementNamed(
-                      context,
-                      '/login_register_page',
-                    );
-                  }
+                  );
                 },
-              ),
-            )
+              ).toList(),
+            ),
           ],
         ),
       ),

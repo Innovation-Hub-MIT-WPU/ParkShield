@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 
 const APP_TITLE = "ParkShield";
 const APP_ICON = "assets/img/app_icon.png";
-
+const DEFAULT_PROFILE_PICTURE =
+    "https://i.ibb.co/FgnFSQc/default-profile-picture.jpg";
 const DEFAULT_TEXT_THEME = TextTheme(
   bodyText1: TextStyle(
     fontFamily: 'RumRaisin',
@@ -13,6 +14,11 @@ const DEFAULT_TEXT_THEME = TextTheme(
     fontFamily: 'RumRaisin',
     fontSize: 60,
     color: Color(0xFF512DA8),
+  ),
+  headline3: TextStyle(
+    fontFamily: 'SakkalMajalla',
+    fontSize: 28,
+    color: Colors.black,
   ),
   subtitle1: TextStyle(
     fontFamily: 'SakkalMajalla',
@@ -30,3 +36,8 @@ const DEFAULT_TEXT_THEME = TextTheme(
     color: Colors.grey,
   ),
 );
+
+const MAIN_COLOR_THEME = {
+  'primary': Color(0xFFC1F0F6),
+  'secondary': Color(0xFFF0FFFF),
+};
