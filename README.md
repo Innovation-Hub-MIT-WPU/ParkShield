@@ -1,6 +1,6 @@
 # Parkshield
 
-iOt-based vehicle protection system to secure one's parked automobiles through an intergated mobile application allowing for users to get notifications in case of breaches with additional features of allowing safe access, nominee addition and much more.
+IoT-based vehicle protection system to secure one's parked automobiles through an intergated mobile application allowing for users to get notifications in case of breaches with additional features of allowing safe access, nominee addition and much more.
  
 ## Mobile Application
 
