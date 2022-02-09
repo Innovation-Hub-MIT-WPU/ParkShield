@@ -10,10 +10,10 @@ iOt-based vehicle protection system to secure one's parked automobiles through a
 
 ## Screenshots
 
+![Regstration](https://user-images.githubusercontent.com/74127653/153258210-8cfba60b-b7c1-457c-985c-2991e068c343.jpg)
+![Login](https://user-images.githubusercontent.com/74127653/153258200-feaf1e4b-d341-4e75-bb5f-7f471e8648bf.jpg)
+![Hamburger Menu](https://user-images.githubusercontent.com/74127653/153258199-20a8273e-3d5b-496c-ae8d-d1b05b4a9ddf.jpg)
+![WiFi Detection](https://user-images.githubusercontent.com/74127653/153258193-3bdb5ca4-87a9-474d-a440-d91f766c5c8d.jpg)
+![Nominee Addition](https://user-images.githubusercontent.com/74127653/153258205-2b3546ce-db7a-49a9-9f76-eed6dffc79cc.jpg)
+![Nominee Added](https://user-images.githubusercontent.com/74127653/153258202-027c4524-2171-478f-ab97-68d664a8ac89.jpg)
 
-![WiFi Detection](https://user-images.githubusercontent.com/74127653/153258027-9b36c3cf-a33f-456f-846b-cd2d78d100b4.jpg)
-![Hamburger Menu](https://user-images.githubusercontent.com/74127653/153258036-e4c21ee0-9a2f-427f-aec1-b150b4f2812a.jpg)
-![Login](https://user-images.githubusercontent.com/74127653/153258039-2a44aee9-046b-442a-98a1-1f1eee587d37.jpg)
-![Nominee Added](https://user-images.githubusercontent.com/74127653/153258042-0cd154e3-a28e-47ba-971a-f04aecb5a561.jpg)
-![Nominee Addition](https://user-images.githubusercontent.com/74127653/153258044-b929f2a9-9f60-4baa-8bde-71a4454dc7bf.jpg)
-![Regstration](https://user-images.githubusercontent.com/74127653/153258045-2a78df56-7780-46e2-88aa-b3a273189ffd.jpg)
