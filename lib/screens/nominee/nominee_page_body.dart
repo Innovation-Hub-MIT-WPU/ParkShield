@@ -27,18 +27,24 @@ class _NomineePageBodyState extends State<NomineePageBody> {
     super.initState();
   }
 
-  void updateVehicleIDs() {
+  void updateVehicleIDs() async {
     vehicleIDs = ['None'];
     _selectedText = 'None';
+    List<String> tempVehicles = [];
 
-    setState(() {
-      userVehicleDocs.orderBy('vehicleID').get().then((queryDocumentSnapshot) {
-        queryDocumentSnapshot.docs.forEach((doc) {
-          vehicleIDs.add("${doc['vehicleID']}");
-          print("${doc['vehicleID']}");
-        });
+    await userVehicleDocs
+        .orderBy('vehicleID')
+        .get()
+        .then((queryDocumentSnapshot) {
+      queryDocumentSnapshot.docs.forEach((doc) {
+        tempVehicles.add("${doc['vehicleID']}");
+        print("${doc['vehicleID']}");
       });
     });
+
+    vehicleIDs = vehicleIDs + tempVehicles;
+    print(vehicleIDs);
+    setState(() {});
   }
 
   int submitNomineeAddition() {
@@ -186,6 +192,7 @@ class _NomineePageBodyState extends State<NomineePageBody> {
                     ),
                     onTap: () async {
                       if (_selectedText != 'None') {
+                        submitNomineeAddition();
                         showDialog(
                           context: context,
                           builder: (BuildContext dialogContext) {

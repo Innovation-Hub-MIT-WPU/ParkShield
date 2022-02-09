@@ -54,7 +54,23 @@ class AuthService {
 
     users.doc(FirebaseAuth.instance.currentUser!.uid).set({
       'email': email,
-      'Total vehicles': 0,
+      'Total vehicles': 2,
+    });
+
+    users
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .collection('vehicles')
+        .add({
+      'vehicleID': 'vehicle1',
+      'connectionStatus': 'Connected',
+    });
+
+    users
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .collection('vehicles')
+        .add({
+      'vehicleID': 'vehicle2',
+      'connectionStatus': 'Not connected',
     });
 
     return [0, ''];
