@@ -16,10 +16,10 @@ class ScanVehiclesBody extends StatefulWidget {
   const ScanVehiclesBody({Key? key}) : super(key: key);
 
   @override
-  _FlutterWifiIoTState createState() => _FlutterWifiIoTState();
+  _ScanVehiclesBodyState createState() => _ScanVehiclesBodyState();
 }
 
-class _FlutterWifiIoTState extends State<ScanVehiclesBody> {
+class _ScanVehiclesBodyState extends State<ScanVehiclesBody> {
   String? _sPreviousAPSSID = "";
   String? _sPreviousPreSharedKey = "";
 
@@ -28,8 +28,8 @@ class _FlutterWifiIoTState extends State<ScanVehiclesBody> {
 
   bool _isEnabled = false;
   bool _isConnected = false;
-  bool _isWifiDisableOpenSettings = false;
-  bool _isWifiEnableOpenSettings = false;
+  bool _isWifiDisableOpenSettings = true;
+  bool _isWifiEnableOpenSettings = true;
 
   final TextStyle textStyle = const TextStyle(color: Colors.black);
 
@@ -378,7 +378,7 @@ class _FlutterWifiIoTState extends State<ScanVehiclesBody> {
         MaterialButton(
           color: const Color(0xFFC1F0F6),
           child: Text("Enable", style: textStyle),
-          onPressed: () {
+          onPressed: () async {
             setState(() {
               WiFiForIoTPlugin.setEnabled(true,
                   shouldOpenSettings: _isWifiEnableOpenSettings);
