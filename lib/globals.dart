@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 
 const APP_TITLE = "ParkShield";
+
 const APP_ICON = "assets/img/app_icon.png";
+
 const DEFAULT_PROFILE_PICTURE =
     "https://i.ibb.co/FgnFSQc/default-profile-picture.jpg";
+
 const DEFAULT_TEXT_THEME = TextTheme(
   bodyText1: TextStyle(
     fontFamily: 'RumRaisin',

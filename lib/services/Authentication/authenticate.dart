@@ -14,6 +14,9 @@ class AuthService {
   // email pass sign in
   Future<List<dynamic>> signInUser(
       {required String email, required String password}) async {
+    if (email == '' && password == '') {
+      return [-1, 'Some error'];
+    }
     try {
       await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: email,
@@ -44,9 +47,6 @@ class AuthService {
       } else if (e.code == 'email-already-in-use') {
         return [1, 'The account already exists for that email'];
       }
-    } catch (e) {
-      print(e);
-      return [-1, e.toString()];
     }
     // Successful registration
 

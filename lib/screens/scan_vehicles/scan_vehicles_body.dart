@@ -31,7 +31,7 @@ class _FlutterWifiIoTState extends State<ScanVehiclesBody> {
   bool _isWifiDisableOpenSettings = false;
   bool _isWifiEnableOpenSettings = false;
 
-  final TextStyle textStyle = TextStyle(color: Colors.white);
+  final TextStyle textStyle = const TextStyle(color: Colors.black);
 
   void _refresh() {
     setNetworkList();
@@ -247,8 +247,8 @@ class _FlutterWifiIoTState extends State<ScanVehiclesBody> {
         const SizedBox(height: 10),
         const Text("Wifi Enabled"),
         MaterialButton(
-          color: Colors.blue,
-          child: Text("Disable", style: textStyle),
+          color: const Color(0xFFC1F0F6),
+          child: const Text("Disable"),
           onPressed: () {
             WiFiForIoTPlugin.setEnabled(false,
                 shouldOpenSettings: _isWifiDisableOpenSettings);
@@ -331,7 +331,7 @@ class _FlutterWifiIoTState extends State<ScanVehiclesBody> {
             ),
           ),
           MaterialButton(
-            color: Colors.blue,
+            color: const Color(0xFFC1F0F6),
             child: Text("Disconnect", style: textStyle),
             onPressed: () {
               WiFiForIoTPlugin.disconnect();
@@ -342,7 +342,7 @@ class _FlutterWifiIoTState extends State<ScanVehiclesBody> {
         htPrimaryWidgets.addAll(<Widget>[
           const Text("Disconnected", style: TextStyle(color: Colors.red)),
           MaterialButton(
-            color: Colors.blue,
+            color: const Color(0xFFC1F0F6),
             child: Text("Scan", style: textStyle),
             onPressed: () async {
               _htResultNetwork = await loadWifiList();
@@ -353,7 +353,7 @@ class _FlutterWifiIoTState extends State<ScanVehiclesBody> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               MaterialButton(
-                color: Colors.blue,
+                color: const Color(0xFFC1F0F6),
                 child: Text("Use WiFi", style: textStyle),
                 onPressed: () {
                   WiFiForIoTPlugin.forceWifiUsage(true);
@@ -361,7 +361,7 @@ class _FlutterWifiIoTState extends State<ScanVehiclesBody> {
               ),
               const SizedBox(width: 50),
               MaterialButton(
-                color: Colors.blue,
+                color: const Color(0xFFC1F0F6),
                 child: Text("Use 3G/4G", style: textStyle),
                 onPressed: () {
                   WiFiForIoTPlugin.forceWifiUsage(false);
@@ -376,7 +376,7 @@ class _FlutterWifiIoTState extends State<ScanVehiclesBody> {
         SizedBox(height: 10),
         Text("Wifi Disabled"),
         MaterialButton(
-          color: Colors.blue,
+          color: const Color(0xFFC1F0F6),
           child: Text("Enable", style: textStyle),
           onPressed: () {
             setState(() {
@@ -385,17 +385,6 @@ class _FlutterWifiIoTState extends State<ScanVehiclesBody> {
             });
           },
         ),
-        CheckboxListTile(
-            title: const Text("Enable WiFi on settings"),
-            subtitle: const Text("Available only on android API level >= 29"),
-            value: _isWifiEnableOpenSettings,
-            onChanged: (bool? setting) {
-              if (setting != null) {
-                setState(() {
-                  _isWifiEnableOpenSettings = setting;
-                });
-              }
-            })
       ]);
     }
 
@@ -460,7 +449,7 @@ class _FlutterWifiIoTState extends State<ScanVehiclesBody> {
         if (_sSSID == STA_DEFAULT_SSID) {
           htPrimaryWidgets.addAll(<Widget>[
             MaterialButton(
-              color: Colors.blue,
+              color: const Color(0xFFC1F0F6),
               child: Text("Disconnect", style: textStyle),
               onPressed: () {
                 WiFiForIoTPlugin.disconnect();
@@ -470,7 +459,7 @@ class _FlutterWifiIoTState extends State<ScanVehiclesBody> {
         } else {
           htPrimaryWidgets.addAll(<Widget>[
             MaterialButton(
-              color: Colors.blue,
+              color: const Color(0xFFC1F0F6),
               child: Text("Connect to '$AP_DEFAULT_SSID'", style: textStyle),
               onPressed: () {
                 WiFiForIoTPlugin.connect(STA_DEFAULT_SSID,
@@ -485,7 +474,7 @@ class _FlutterWifiIoTState extends State<ScanVehiclesBody> {
         htPrimaryWidgets.addAll(<Widget>[
           const Text("Disconnected"),
           MaterialButton(
-            color: Colors.blue,
+            color: const Color(0xFFC1F0F6),
             child: Text("Connect to '$AP_DEFAULT_SSID'", style: textStyle),
             onPressed: () {
               WiFiForIoTPlugin.connect(STA_DEFAULT_SSID,
@@ -500,7 +489,7 @@ class _FlutterWifiIoTState extends State<ScanVehiclesBody> {
       htPrimaryWidgets.addAll(<Widget>[
         Text("Wifi Disabled?"),
         MaterialButton(
-          color: Colors.blue,
+          color: const Color(0xFFC1F0F6),
           child: Text("Connect to '$AP_DEFAULT_SSID'", style: textStyle),
           onPressed: () {
             WiFiForIoTPlugin.connect(STA_DEFAULT_SSID,
@@ -520,8 +509,11 @@ class _FlutterWifiIoTState extends State<ScanVehiclesBody> {
     return Scaffold(
       drawer: const CommonDrawer(),
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'Scan for Vehicle Wifi',
+          style: Theme.of(context).textTheme.bodyText1!.copyWith(
+                fontSize: 24,
+              ),
         ),
         actions: <Widget>[
               IconButton(onPressed: _refresh, icon: const Icon(Icons.refresh))

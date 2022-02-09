@@ -9,23 +9,11 @@ class ScanVehiclesPage extends StatefulWidget {
 }
 
 class _ScanVehiclesPageState extends State<ScanVehiclesPage> {
-  late ScanVehiclesBody scanVehiclesBody;
-  Future<void> _refresh() async {
-    scanVehiclesBody = const ScanVehiclesBody();
-    setState(() {});
-  }
-
-  @override
-  void initState() {
-    scanVehiclesBody = const ScanVehiclesBody();
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
     final num screenWidth = MediaQuery.of(context).size.width;
     final num screenHeight = MediaQuery.of(context).size.height;
 
-    return scanVehiclesBody;
+    return const ScanVehiclesBody();
   }
 }

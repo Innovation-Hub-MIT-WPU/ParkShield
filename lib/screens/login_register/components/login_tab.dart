@@ -1,3 +1,4 @@
+import 'package:ParkShield/globals.dart';
 import 'package:ParkShield/services/Authentication/authenticate.dart';
 import 'package:flutter/material.dart';
 
@@ -37,6 +38,9 @@ class _LoginTabState extends State<LoginTab> {
   }
 
   Future<void> signIn() async {
+    if (emailController.text == '' || passwordController.text == '') {
+      return;
+    }
     List<dynamic> result = await auth.signInUser(
         email: emailController.text, password: passwordController.text);
 
@@ -47,7 +51,9 @@ class _LoginTabState extends State<LoginTab> {
     } else if (result[0] == 2) {
       errorTextPassword = result[1];
     } else if (result[0] == 0) {
-      Navigator.pushReplacementNamed(context, '/profile_page');
+      if (checkLoggedIn()) {
+        Navigator.pushReplacementNamed(context, '/profile_page');
+      }
     }
     setState(() {});
   }
@@ -157,19 +163,21 @@ class _LoginTabState extends State<LoginTab> {
                     widget.screenWidth / 2,
                 height: double.parse('${widget.screenHeight}') / 17.5,
                 decoration: BoxDecoration(
-                  color: Colors.blue,
+                  color: MAIN_COLOR_THEME['primary'],
                   borderRadius: BorderRadius.circular(widget.screenWidth / 50),
                 ),
                 child: Center(
                   child: Text(
                     "LOGIN",
-                    style: Theme.of(context).textTheme.bodyText1,
+                    style: Theme.of(context).textTheme.bodyText1!.copyWith(
+                          color: Colors.black,
+                        ),
                     textAlign: TextAlign.center,
                   ),
                 ),
               ),
               onTap: () async {
-                signIn();
+                await signIn();
               },
             ),
           ),

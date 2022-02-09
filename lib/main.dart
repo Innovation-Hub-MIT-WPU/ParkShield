@@ -29,6 +29,13 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         brightness: Brightness.light,
         textTheme: DEFAULT_TEXT_THEME,
+        colorScheme: Theme.of(context).colorScheme.copyWith(
+              primary: const Color(0x9400688B),
+              secondary: const Color(0xFFF0FFFF),
+            ),
+        buttonTheme: Theme.of(context).buttonTheme.copyWith(
+              buttonColor: const Color(0xFFC1F0F6),
+            ),
       ),
       darkTheme: ThemeData(
         brightness: Brightness.dark,

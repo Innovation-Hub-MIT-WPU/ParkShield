@@ -90,7 +90,7 @@ class _ProfileBodyState extends State<ProfileBody> {
               vertical: screenHeight / 75,
             ),
             child: StreamBuilder<QuerySnapshot>(
-              stream: userDocumentCollectionStream(collection: 'vehicles')
+              stream: userDocumentCollection(collection: 'vehicles')
                   .orderBy('vehicleID')
                   .snapshots(),
               builder: (BuildContext context,

@@ -1,4 +1,5 @@
 import 'package:ParkShield/globals.dart';
+import 'package:ParkShield/services/Authentication/authenticate.dart';
 import 'package:ParkShield/services/Requests/firestore_requesting.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +15,7 @@ class _CommonDrawerState extends State<CommonDrawer> {
   late String profileImageLink;
   List<List<String>> routesInfo = [
     ['Profile', '/profile_page'],
-    ['Scan Vehicles', '/test'],
+    ['Scan Vehicles', '/scan_vehicles_page'],
     ['Nominees', '/nominee_page'],
     ['Logout', '/login_register_page'],
   ];
@@ -45,6 +46,9 @@ class _CommonDrawerState extends State<CommonDrawer> {
                 if (snapshot.hasData) {
                   userInfo = snapshot.data!.data() as Map<String, dynamic>;
                   return UserAccountsDrawerHeader(
+                    decoration: const BoxDecoration(
+                      color: Color(0x9400688B),
+                    ),
                     currentAccountPicture: CircleAvatar(
                       radius: screenWidth / 4,
                       backgroundImage: const NetworkImage(
@@ -83,10 +87,18 @@ class _CommonDrawerState extends State<CommonDrawer> {
                         ),
                       ),
                       onTap: () async {
-                        Navigator.pushReplacementNamed(
-                          context,
-                          l[1],
-                        );
+                        if (l[1] != '/login_register_page') {
+                          Navigator.pushReplacementNamed(
+                            context,
+                            l[1],
+                          );
+                        } else {
+                          await signOut();
+                          Navigator.pushReplacementNamed(
+                            context,
+                            l[1],
+                          );
+                        }
                       },
                     ),
                   );

@@ -1,3 +1,4 @@
+import 'package:ParkShield/globals.dart';
 import 'package:ParkShield/services/Authentication/authenticate.dart';
 import 'package:flutter/material.dart';
 import 'package:ParkShield/widgets/alerts.dart';
@@ -226,13 +227,16 @@ class _RegisterTabState extends State<RegisterTab> {
                     widget.screenWidth / 2,
                 height: double.parse('${widget.screenHeight}') / 17.5,
                 decoration: BoxDecoration(
-                  color: Colors.blue,
+                  color: MAIN_COLOR_THEME['primary'],
                   borderRadius: BorderRadius.circular(widget.screenWidth / 50),
                 ),
                 child: Center(
                   child: Text(
                     "REGISTER",
-                    style: Theme.of(context).textTheme.bodyText1,
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyText1!
+                        .copyWith(color: Colors.black),
                     textAlign: TextAlign.center,
                   ),
                 ),
