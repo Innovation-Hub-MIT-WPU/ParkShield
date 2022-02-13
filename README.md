@@ -20,7 +20,7 @@ flutter pub get
 flutterfire configure
 ```
 
-Copy the  `firbase_options.dart` file in the relative path `services/Authentication/`
+Copy the  `firbase_options.dart` file present in the `lib` folder into  `lib/services/Authentication/` folder
 
 
 ## Screenshots
