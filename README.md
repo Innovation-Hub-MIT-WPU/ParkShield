@@ -11,10 +11,11 @@ IoT-based vehicle protection system to secure one's parked automobiles through a
 ## How to install
 
 - Download firebase CLI tools
-- Run flutterfire configure in the app directory
-
+- Run the below code
 
 ```
+dart pub global activate flutterfire_cli
+flutter create .
 flutter pub add firebase_core
 flutter pub get
 flutterfire configure
