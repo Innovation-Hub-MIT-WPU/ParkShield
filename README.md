@@ -8,6 +8,20 @@ IoT-based vehicle protection system to secure one's parked automobiles through a
 - Implements WiFi detection and management
 - Profile dashboard, nominee addition, scanning vehichles enabled
 
+## How to install
+
+- Download firebase CLI tools
+
+- Run flutterfire configure in the app directory
+`
+flutter pub add firebase_core
+flutter pub get
+flutterfire configure
+`
+
+Copy the  `firbase_options.dart` file in the relative path `services/Authentication/`
+
+
 ## Screenshots
 
 ### Register
