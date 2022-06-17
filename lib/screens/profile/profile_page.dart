@@ -1,3 +1,5 @@
+import 'package:ParkShield/globals.dart';
+import 'package:ParkShield/screens/add_vehicles/add_vehicles_popup.dart';
 import 'package:ParkShield/screens/profile/profile_body.dart';
 import 'package:ParkShield/widgets/drawer.dart';
 import 'package:flutter/material.dart';
@@ -43,6 +45,14 @@ class _ProfilePageState extends State<ProfilePage> {
         centerTitle: true,
       ),
       body: profileBody,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          await showDialog(
+              context: context, builder: (context) => const AddVehiclePopUp());
+        },
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        child: const Icon(Icons.add),
+      ),
     );
   }
 }

@@ -1,7 +1,8 @@
 import 'package:ParkShield/globals.dart';
-import 'package:ParkShield/services/Authentication/authenticate.dart';
-import 'package:ParkShield/services/Requests/firestore_requesting.dart';
+import 'package:ParkShield/services/Firebase/FireAuth/fireauth.dart';
+import 'package:ParkShield/services/Firebase/FireStore/firestore.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class CommonDrawer extends StatefulWidget {
@@ -35,35 +36,39 @@ class _CommonDrawerState extends State<CommonDrawer> {
     final num screenWidth = MediaQuery.of(context).size.width;
     final num screenHeight = MediaQuery.of(context).size.height;
 
+    final User user = getCurrentUser();
     return Drawer(
+      shape: const RoundedRectangleBorder(
+          borderRadius:
+              BorderRadius.horizontal(right: Radius.elliptical(150, 500))),
+      backgroundColor: Theme.of(context).colorScheme.primary,
       child: SingleChildScrollView(
         child: Column(
           children: [
-            StreamBuilder<DocumentSnapshot>(
-              stream: userDocumentReference().snapshots(),
-              builder: (BuildContext context,
-                  AsyncSnapshot<DocumentSnapshot> snapshot) {
-                if (snapshot.hasData) {
-                  userInfo = snapshot.data!.data() as Map<String, dynamic>;
-                  return UserAccountsDrawerHeader(
-                    decoration: const BoxDecoration(
-                      color: Color(0x9400688B),
-                    ),
-                    currentAccountPicture: CircleAvatar(
-                      radius: screenWidth / 4,
-                      backgroundImage: const NetworkImage(
-                        DEFAULT_PROFILE_PICTURE,
-                      ),
-                    ),
-                    accountName: const Text(''),
-                    accountEmail: Text(userInfo['email']),
-                  );
-                } else if (snapshot.hasError) {
-                  return const Text('There was an error...');
-                } else {
-                  return const CircularProgressIndicator();
-                }
-              },
+            UserAccountsDrawerHeader(
+              decoration: const BoxDecoration(color: Colors.transparent),
+              currentAccountPicture: CircleAvatar(
+                radius: screenWidth / 4,
+                backgroundImage: NetworkImage(
+                  user.photoURL == null
+                      ? DEFAULT_PROFILE_PICTURE
+                      : user.photoURL!,
+                ),
+              ),
+              accountName: Text(
+                user.displayName as String,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  // color: Theme.of(context).colorScheme.primary,
+                ),
+              ),
+              accountEmail: Text(
+                user.email as String,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  // color: Theme.of(context).colorScheme.primary,
+                ),
+              ),
             ),
             Column(
               children: routesInfo.map(
@@ -72,16 +77,28 @@ class _CommonDrawerState extends State<CommonDrawer> {
                     child: InkWell(
                       child: SizedBox(
                         width: screenWidth / 1,
-                        height: screenHeight / 10,
-                        child: Card(
-                          shape: RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.circular(screenWidth / 100),
-                          ),
-                          child: ListTile(
-                            title: Text(
-                              l[0],
-                              style: Theme.of(context).textTheme.headline3,
+                        height: screenHeight / 12,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                          child: Card(
+                            elevation: 5,
+                            color: MAIN_COLOR_THEME['primary'],
+                            shape: const RoundedRectangleBorder(
+                              borderRadius: BorderRadius.horizontal(
+                                  right: Radius.elliptical(400, 900),
+                                  left: Radius.elliptical(200, 200)),
+                            ),
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 10),
+                              child: Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                  l[0],
+                                  textAlign: TextAlign.left,
+                                  style: Theme.of(context).textTheme.headline3,
+                                ),
+                              ),
                             ),
                           ),
                         ),
@@ -94,6 +111,7 @@ class _CommonDrawerState extends State<CommonDrawer> {
                           );
                         } else {
                           await signOut();
+                          await signOutGoogle();
                           Navigator.pushReplacementNamed(
                             context,
                             l[1],

@@ -1,7 +1,8 @@
 import 'package:ParkShield/globals.dart';
-import 'package:ParkShield/services/Authentication/authenticate.dart';
+import 'package:ParkShield/services/Firebase/FireAuth/fireauth.dart';
 import 'package:flutter/material.dart';
 import 'package:ParkShield/widgets/alerts.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class RegisterTab extends StatefulWidget {
   const RegisterTab({
@@ -29,7 +30,6 @@ class _RegisterTabState extends State<RegisterTab> {
     const Icon(Icons.visibility),
     const Icon(Icons.visibility),
   ];
-  AuthService auth = AuthService();
 
   changeHidden({required int value}) {
     isHidden[value] = !isHidden[value];
@@ -40,7 +40,7 @@ class _RegisterTabState extends State<RegisterTab> {
   }
 
   Future<void> register() async {
-    List<dynamic> result = await auth.registerUser(
+    List<dynamic> result = await registerUser(
         email: emailController.text, password: passwordController.text);
     print(result);
     if (result[0] == 1) {
@@ -108,6 +108,9 @@ class _RegisterTabState extends State<RegisterTab> {
               ],
             ),
             child: Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15.0),
+              ),
               elevation: 10,
               child: Column(
                 children: [
@@ -241,12 +244,43 @@ class _RegisterTabState extends State<RegisterTab> {
                   ),
                 ),
               ),
-              onTap: () {
-                register();
+              onTap: () async {
+                await register();
               },
             ),
           ),
         ),
+        Divider(
+          thickness: 2,
+          indent: widget.screenWidth / 10,
+          endIndent: widget.screenWidth / 10,
+        ),
+        Expanded(
+          child: Align(
+            alignment: FractionalOffset.center,
+            child: CircleAvatar(
+              backgroundColor: Colors.grey.shade100,
+              child: IconButton(
+                icon: const Icon(FontAwesomeIcons.google),
+                onPressed: () async {
+                  if (await signInWithGoogle()) {
+                    await showDialog(
+                      context: context,
+                      builder: (BuildContext dialogContext) {
+                        return const MyAlertDialog(
+                          title: 'You are now registered!',
+                          content: 'Okay',
+                          singleButton: 'popBack',
+                        );
+                      },
+                    );
+                    Navigator.pushReplacementNamed(context, "/profile_page");
+                  }
+                },
+              ),
+            ),
+          ),
+        )
       ],
     );
   }

@@ -1,7 +1,5 @@
-import 'dart:math' as math;
-
 import 'package:ParkShield/globals.dart';
-import 'package:ParkShield/services/Requests/firestore_requesting.dart';
+import 'package:ParkShield/services/Firebase/FireStore/firestore.dart';
 import 'package:ParkShield/widgets/alerts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -61,6 +59,7 @@ class _NomineePageBodyState extends State<NomineePageBody> {
     final num screenHeight = MediaQuery.of(context).size.height;
 
     final Card uidAccept = Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       elevation: 5,
       child: ListTile(
         leading: const Icon(
@@ -86,6 +85,7 @@ class _NomineePageBodyState extends State<NomineePageBody> {
     );
 
     final Card vehicleIDAccept = Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       elevation: 5,
       child: SizedBox(
         width: screenWidth / 2,

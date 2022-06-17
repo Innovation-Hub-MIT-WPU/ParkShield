@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ParkShield/globals.dart';
-import 'package:ParkShield/services/Authentication/authenticate.dart';
+import 'package:ParkShield/services/Firebase/FireAuth/fireauth.dart';
 
 class Splash extends StatefulWidget {
   const Splash({Key? key, required this.title}) : super(key: key);

@@ -1,8 +1,14 @@
 // ignore_for_file: deprecated_member_use, package_api_docs, public_member_api_docs
+import 'dart:convert';
+
+import 'package:ParkShield/globals.dart';
+import 'package:ParkShield/screens/scan_vehicles/browser.dart';
 import 'package:ParkShield/widgets/drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:wifi_iot/wifi_iot.dart';
+import 'package:http/http.dart' as http;
 import 'dart:io' show Platform;
 
 const String STA_DEFAULT_SSID = "STA_SSID";
@@ -20,25 +26,30 @@ class ScanVehiclesBody extends StatefulWidget {
 }
 
 class _ScanVehiclesBodyState extends State<ScanVehiclesBody> {
-  String? _sPreviousAPSSID = "";
-  String? _sPreviousPreSharedKey = "";
-
+  final MyInAppBrowser browser = new MyInAppBrowser();
+  var options = InAppBrowserClassOptions(
+      crossPlatform: InAppBrowserOptions(hideUrlBar: false),
+      inAppWebViewGroupOptions: InAppWebViewGroupOptions(
+          crossPlatform: InAppWebViewOptions(javaScriptEnabled: true)));
   List<WifiNetwork?>? _htResultNetwork;
-  Map<String, bool>? _htIsNetworkRegistered = Map();
+  final Map<String, bool>? _htIsNetworkRegistered = Map();
+  late TextEditingController passwordController = TextEditingController();
 
   bool _isEnabled = false;
+  bool withInternet = false;
   bool _isConnected = false;
+  bool vehicleState = false;
   bool _isWifiDisableOpenSettings = true;
   bool _isWifiEnableOpenSettings = true;
 
   final TextStyle textStyle = const TextStyle(color: Colors.black);
 
-  void _refresh() {
-    setNetworkList();
+  Future<void> _refresh() async {
+    await getNetworkList();
     setState(() {});
   }
 
-  void setNetworkList() async {
+  Future<void> getNetworkList() async {
     _htResultNetwork = await loadWifiList();
   }
 
@@ -52,64 +63,12 @@ class _ScanVehiclesBodyState extends State<ScanVehiclesBody> {
       _isConnected = val;
     });
 
-    setNetworkList();
+    getNetworkList();
 
     super.initState();
   }
 
-  storeAndConnect(String psSSID, String psKey) async {
-    await storeAPInfos();
-    await WiFiForIoTPlugin.setWiFiAPSSID(psSSID);
-    await WiFiForIoTPlugin.setWiFiAPPreSharedKey(psKey);
-  }
-
-  storeAPInfos() async {
-    String? sAPSSID;
-    String? sPreSharedKey;
-
-    try {
-      sAPSSID = await WiFiForIoTPlugin.getWiFiAPSSID();
-    } on PlatformException {
-      sAPSSID = "";
-    }
-
-    try {
-      sPreSharedKey = await WiFiForIoTPlugin.getWiFiAPPreSharedKey();
-    } on PlatformException {
-      sPreSharedKey = "";
-    }
-
-    setState(() {
-      _sPreviousAPSSID = sAPSSID;
-      _sPreviousPreSharedKey = sPreSharedKey;
-    });
-  }
-
-  restoreAPInfos() async {
-    WiFiForIoTPlugin.setWiFiAPSSID(_sPreviousAPSSID!);
-    WiFiForIoTPlugin.setWiFiAPPreSharedKey(_sPreviousPreSharedKey!);
-  }
-
-  // [sAPSSID, sPreSharedKey]
-  Future<List<String>> getWiFiAPInfos() async {
-    String? sAPSSID;
-    String? sPreSharedKey;
-
-    try {
-      sAPSSID = await WiFiForIoTPlugin.getWiFiAPSSID();
-    } on Exception {
-      sAPSSID = "";
-    }
-
-    try {
-      sPreSharedKey = await WiFiForIoTPlugin.getWiFiAPPreSharedKey();
-    } on Exception {
-      sPreSharedKey = "";
-    }
-
-    return [sAPSSID!, sPreSharedKey!];
-  }
-
+  // WiFi List
   Future<List<WifiNetwork>> loadWifiList() async {
     List<WifiNetwork> htResultNetwork;
     try {
@@ -121,11 +80,14 @@ class _ScanVehiclesBodyState extends State<ScanVehiclesBody> {
     return htResultNetwork;
   }
 
-  isRegisteredWifiNetwork(String ssid) async {
+  Future<void> isRegisteredWifiNetwork(String ssid) async {
     bool bIsRegistered;
 
     try {
       bIsRegistered = await WiFiForIoTPlugin.isRegisteredWifiNetwork(ssid);
+      if (bIsRegistered == false) {
+        WiFiForIoTPlugin.registerWifiNetwork(ssid);
+      }
     } on PlatformException {
       bIsRegistered = false;
     }
@@ -135,7 +97,7 @@ class _ScanVehiclesBodyState extends State<ScanVehiclesBody> {
     });
   }
 
-  Widget getWidgets() {
+  Widget getWidgets({required BuildContext buildContext}) {
     final List<ListTile> htNetworks = <ListTile>[];
 
     WiFiForIoTPlugin.isConnected().then((val) {
@@ -149,11 +111,10 @@ class _ScanVehiclesBodyState extends State<ScanVehiclesBody> {
       _htResultNetwork = null;
     }
 
-    if (_htResultNetwork != null && _htResultNetwork!.length > 0) {
+    if (_htResultNetwork != null && _htResultNetwork!.isNotEmpty) {
       _htResultNetwork!.forEach((oNetwork) {
         final PopupCommand oCmdConnect =
             PopupCommand("Connect", oNetwork!.ssid!);
-        final PopupCommand oCmdRemove = PopupCommand("Remove", oNetwork.ssid!);
 
         final List<PopupMenuItem<PopupCommand>> htPopupMenuItems = [];
 
@@ -164,53 +125,164 @@ class _ScanVehiclesBodyState extends State<ScanVehiclesBody> {
           ),
         );
 
-        setState(() {
-          isRegisteredWifiNetwork(oNetwork.ssid!);
-          if (_htIsNetworkRegistered!.containsKey(oNetwork.ssid) &&
-              _htIsNetworkRegistered![oNetwork.ssid]!) {
-            htPopupMenuItems.add(
-              PopupMenuItem<PopupCommand>(
-                value: oCmdRemove,
-                child: const Text('Remove'),
-              ),
-            );
-          }
+        bool connectNow = false;
 
-          htNetworks.add(
-            ListTile(
-              title: Text(
-                "" +
-                    oNetwork.ssid! +
-                    ((_htIsNetworkRegistered!.containsKey(oNetwork.ssid) &&
-                            _htIsNetworkRegistered![oNetwork.ssid]!)
-                        ? " *"
-                        : ""),
-                style: Theme.of(context).textTheme.headline3!.copyWith(
-                      fontSize: 24,
-                    ),
-              ),
-              trailing: PopupMenuButton<PopupCommand>(
-                padding: EdgeInsets.zero,
-                onSelected: (PopupCommand poCommand) {
-                  switch (poCommand.command) {
-                    case "Connect":
-                      WiFiForIoTPlugin.connect(STA_DEFAULT_SSID,
-                          password: STA_DEFAULT_PASSWORD,
-                          joinOnce: true,
-                          security: STA_DEFAULT_SECURITY);
-                      break;
-                    case "Remove":
-                      WiFiForIoTPlugin.removeWifiNetwork(poCommand.argument);
-                      break;
-                    default:
-                      break;
-                  }
-                },
-                itemBuilder: (BuildContext context) => htPopupMenuItems,
-              ),
+        htNetworks.add(
+          ListTile(
+            title: Text(
+              "" +
+                  oNetwork.ssid! +
+                  ((_htIsNetworkRegistered!.containsKey(oNetwork.ssid) &&
+                          _htIsNetworkRegistered![oNetwork.ssid]!)
+                      ? " *"
+                      : ""),
+              style: Theme.of(context).textTheme.headline3!.copyWith(
+                    fontSize: 24,
+                  ),
             ),
-          );
-        });
+            trailing: PopupMenuButton<PopupCommand>(
+              padding: EdgeInsets.zero,
+              onSelected: (PopupCommand poCommand) async {
+                switch (poCommand.command) {
+                  case "Connect":
+                    print("Connecting to ${oNetwork.ssid!}");
+                    await showDialog(
+                      context: context,
+                      builder: (BuildContext dialogContext) {
+                        return FittedBox(
+                          fit: BoxFit.contain,
+                          child: AlertDialog(
+                            title: Text('Enter password for ${oNetwork.ssid}'),
+                            content: Flex(
+                              direction: Axis.vertical,
+                              children: [
+                                TextField(
+                                  controller: passwordController,
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(10),
+                                  child: Ink(
+                                    decoration: BoxDecoration(
+                                      color: MAIN_COLOR_THEME['primary'],
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: InkWell(
+                                        child: const Padding(
+                                          padding: EdgeInsets.all(20),
+                                          child: Text(
+                                            "Connect",
+                                            style: TextStyle(
+                                                color: Colors.black87,
+                                                fontSize: 24),
+                                          ),
+                                        ),
+                                        onTap: () {
+                                          setState(() {});
+                                          Navigator.of(context).pop();
+                                          connectNow = true;
+                                        }),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(10),
+                                  child: Ink(
+                                    decoration: BoxDecoration(
+                                      color: MAIN_COLOR_THEME['primary'],
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: InkWell(
+                                        child: const Padding(
+                                          padding: EdgeInsets.all(20),
+                                          child: Text(
+                                            "Cancel",
+                                            style: TextStyle(
+                                                color: Colors.black87,
+                                                fontSize: 24),
+                                          ),
+                                        ),
+                                        onTap: () {
+                                          setState(() {});
+                                          Navigator.of(context).pop();
+                                        }),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                    // Add password input here
+                    if (connectNow) {
+                      print("FORCE WIFI USAGE");
+                      print(WiFiForIoTPlugin.forceWifiUsage(true));
+                      if (withInternet) {
+                        await WiFiForIoTPlugin.findAndConnect(
+                          oNetwork.ssid!,
+                          password: passwordController.text,
+                          joinOnce: false,
+                          withInternet: true,
+                        );
+                      } else {
+                        await WiFiForIoTPlugin.connect(
+                          oNetwork.ssid!,
+                          password: passwordController.text,
+                          joinOnce: false,
+                          security: NetworkSecurity.WPA,
+                        );
+                      }
+
+                      // final response =
+                      //     await http.get(Uri.parse('https://192.168.0.1/'));
+                      // print(response.body);
+
+                      late BuildContext dialogContextDefault;
+                      if (withInternet) {
+                        showDialog(
+                          barrierDismissible: false,
+                          context: context,
+                          builder: (BuildContext dialogContext) {
+                            dialogContextDefault = dialogContext;
+                            return Dialog(
+                              child: Padding(
+                                padding: const EdgeInsets.all(30),
+                                child: Row(
+                                  children: const [
+                                    CircularProgressIndicator(),
+                                    SizedBox(width: 10),
+                                    Text("Loading")
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                        );
+                      }
+                      while (await WiFiForIoTPlugin.isConnected() != true);
+                      Future.delayed(const Duration(seconds: 2), () async {
+                        print("THIS IS HTTP");
+                        print(await http
+                            .get(Uri.parse('http://192.168.4.1/2/on')));
+                        if (withInternet) {
+                          Navigator.pop(dialogContextDefault);
+                        }
+                        // await browser.openUrlRequest(
+                        //     urlRequest: URLRequest(
+                        //         url: Uri.parse("http://192.168.4.1")),
+                        //     options: options);
+                      });
+                    }
+
+                    break;
+                  default:
+                    break;
+                }
+              },
+              itemBuilder: (BuildContext context) => htPopupMenuItems,
+            ),
+          ),
+        );
+        setState(() {});
       });
     }
 
@@ -333,8 +405,35 @@ class _ScanVehiclesBodyState extends State<ScanVehiclesBody> {
           MaterialButton(
             color: const Color(0xFFC1F0F6),
             child: Text("Disconnect", style: textStyle),
-            onPressed: () {
-              WiFiForIoTPlugin.disconnect();
+            onPressed: () async {
+              String ssid = await WiFiForIoTPlugin.getSSID() as String;
+              await WiFiForIoTPlugin.disconnect();
+              await WiFiForIoTPlugin.removeWifiNetwork(ssid);
+              setState(() {});
+            },
+          ),
+          MaterialButton(
+            color: const Color(0xFFC1F0F6),
+            child: Text("Turn " + (vehicleState ? "on" : "off") + " vehicle",
+                style: textStyle),
+            onPressed: () async {
+              print("Getting state");
+              var response =
+                  await http.get(Uri.parse("http://192.168.4.1/state"));
+
+              print("THE RESPONSE");
+
+              print(response.body);
+              Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+              print(jsonResponse);
+              if (jsonResponse["state"] == 0) {
+                await http.get(Uri.parse("http://192.168.4.1/2/on"));
+                vehicleState = false;
+              } else {
+                await http.get(Uri.parse("http://192.168.4.1/2/off"));
+                vehicleState = true;
+              }
+              setState(() {});
             },
           ),
         ]);
@@ -349,32 +448,21 @@ class _ScanVehiclesBodyState extends State<ScanVehiclesBody> {
               setState(() {});
             },
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              MaterialButton(
-                color: const Color(0xFFC1F0F6),
-                child: Text("Use WiFi", style: textStyle),
-                onPressed: () {
-                  WiFiForIoTPlugin.forceWifiUsage(true);
-                },
-              ),
-              const SizedBox(width: 50),
-              MaterialButton(
-                color: const Color(0xFFC1F0F6),
-                child: Text("Use 3G/4G", style: textStyle),
-                onPressed: () {
-                  WiFiForIoTPlugin.forceWifiUsage(false);
-                },
-              ),
-            ],
+          MaterialButton(
+            color: const Color(0xFFC1F0F6),
+            child: Text(withInternet ? "Internet : true" : "Internet : false",
+                style: textStyle),
+            onPressed: () {
+              withInternet = !withInternet;
+              setState(() {});
+            },
           ),
         ]);
       }
     } else {
       htPrimaryWidgets.addAll(<Widget>[
-        SizedBox(height: 10),
-        Text("Wifi Disabled"),
+        const SizedBox(height: 10),
+        const Text("Wifi Disabled"),
         MaterialButton(
           color: const Color(0xFFC1F0F6),
           child: Text("Enable", style: textStyle),
@@ -388,7 +476,7 @@ class _ScanVehiclesBodyState extends State<ScanVehiclesBody> {
       ]);
     }
 
-    htPrimaryWidgets.add(Divider(
+    htPrimaryWidgets.add(const Divider(
       height: 32.0,
     ));
 
@@ -403,7 +491,7 @@ class _ScanVehiclesBodyState extends State<ScanVehiclesBody> {
         }));
 
     if (_isEnabled) {
-      htPrimaryWidgets.add(Text("Wifi Enabled"));
+      htPrimaryWidgets.add(const Text("Wifi Enabled"));
       WiFiForIoTPlugin.isConnected().then((val) => setState(() {
             _isConnected = val;
           }));
@@ -445,49 +533,10 @@ class _ScanVehiclesBodyState extends State<ScanVehiclesBody> {
             ),
           ),
         ]);
-
-        if (_sSSID == STA_DEFAULT_SSID) {
-          htPrimaryWidgets.addAll(<Widget>[
-            MaterialButton(
-              color: const Color(0xFFC1F0F6),
-              child: Text("Disconnect", style: textStyle),
-              onPressed: () {
-                WiFiForIoTPlugin.disconnect();
-              },
-            ),
-          ]);
-        } else {
-          htPrimaryWidgets.addAll(<Widget>[
-            MaterialButton(
-              color: const Color(0xFFC1F0F6),
-              child: Text("Connect to '$AP_DEFAULT_SSID'", style: textStyle),
-              onPressed: () {
-                WiFiForIoTPlugin.connect(STA_DEFAULT_SSID,
-                    password: STA_DEFAULT_PASSWORD,
-                    joinOnce: true,
-                    security: NetworkSecurity.WPA);
-              },
-            ),
-          ]);
-        }
-      } else {
-        htPrimaryWidgets.addAll(<Widget>[
-          const Text("Disconnected"),
-          MaterialButton(
-            color: const Color(0xFFC1F0F6),
-            child: Text("Connect to '$AP_DEFAULT_SSID'", style: textStyle),
-            onPressed: () {
-              WiFiForIoTPlugin.connect(STA_DEFAULT_SSID,
-                  password: STA_DEFAULT_PASSWORD,
-                  joinOnce: true,
-                  security: NetworkSecurity.WPA);
-            },
-          ),
-        ]);
       }
     } else {
       htPrimaryWidgets.addAll(<Widget>[
-        Text("Wifi Disabled?"),
+        const Text("Wifi Disabled"),
         MaterialButton(
           color: const Color(0xFFC1F0F6),
           child: Text("Connect to '$AP_DEFAULT_SSID'", style: textStyle),
@@ -499,6 +548,7 @@ class _ScanVehiclesBodyState extends State<ScanVehiclesBody> {
           },
         ),
       ]);
+      setState(() {});
     }
 
     return htPrimaryWidgets;
@@ -509,6 +559,7 @@ class _ScanVehiclesBodyState extends State<ScanVehiclesBody> {
     return Scaffold(
       drawer: const CommonDrawer(),
       appBar: AppBar(
+        centerTitle: true,
         title: Text(
           'Scan for Vehicle Wifi',
           style: Theme.of(context).textTheme.bodyText1!.copyWith(
@@ -516,7 +567,11 @@ class _ScanVehiclesBodyState extends State<ScanVehiclesBody> {
               ),
         ),
         actions: <Widget>[
-              IconButton(onPressed: _refresh, icon: const Icon(Icons.refresh))
+              IconButton(
+                  onPressed: () async {
+                    await _refresh();
+                  },
+                  icon: const Icon(Icons.refresh))
             ] +
             (_isConnected
                 ? <Widget>[
@@ -549,7 +604,7 @@ class _ScanVehiclesBodyState extends State<ScanVehiclesBody> {
                   ]
                 : <Widget>[]),
       ),
-      body: getWidgets(),
+      body: getWidgets(buildContext: poContext),
     );
   }
 }

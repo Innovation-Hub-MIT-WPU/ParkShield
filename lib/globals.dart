@@ -43,4 +43,5 @@ const DEFAULT_TEXT_THEME = TextTheme(
 const MAIN_COLOR_THEME = {
   'primary': Color(0xFFC1F0F6),
   'secondary': Color(0xFFF0FFFF),
+  'tertiary': Color(0xFF512DA8),
 };

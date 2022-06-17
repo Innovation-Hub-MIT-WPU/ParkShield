@@ -1,6 +1,8 @@
 import 'package:ParkShield/globals.dart';
-import 'package:ParkShield/services/Authentication/authenticate.dart';
+import 'package:ParkShield/services/Firebase/FireAuth/fireauth.dart';
+import 'package:ParkShield/widgets/alerts.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class LoginTab extends StatefulWidget {
   const LoginTab({
@@ -21,7 +23,6 @@ class _LoginTabState extends State<LoginTab> {
   String errorTextEmail = '', errorTextPassword = '';
   bool isHidden = true;
   Icon visibilityIcon = const Icon(Icons.visibility);
-  AuthService auth = AuthService();
 
   @override
   void initState() {
@@ -41,7 +42,7 @@ class _LoginTabState extends State<LoginTab> {
     if (emailController.text == '' || passwordController.text == '') {
       return;
     }
-    List<dynamic> result = await auth.signInUser(
+    List<dynamic> result = await signInUser(
         email: emailController.text, password: passwordController.text);
 
     print(result);
@@ -77,6 +78,9 @@ class _LoginTabState extends State<LoginTab> {
               ],
             ),
             child: Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15.0),
+              ),
               elevation: 10,
               child: Column(
                 children: [
@@ -86,6 +90,7 @@ class _LoginTabState extends State<LoginTab> {
                       horizontal: widget.screenWidth / 40,
                     ),
                     child: ListTile(
+                      style: ListTileStyle.list,
                       leading: const Icon(
                         Icons.account_circle,
                         color: Colors.grey,
@@ -156,7 +161,7 @@ class _LoginTabState extends State<LoginTab> {
         ),
         Expanded(
           child: Align(
-            alignment: FractionalOffset.bottomCenter,
+            alignment: FractionalOffset.center,
             child: InkWell(
               child: Ink(
                 width: double.parse('${widget.screenWidth}') -
@@ -182,6 +187,27 @@ class _LoginTabState extends State<LoginTab> {
             ),
           ),
         ),
+        Divider(
+          thickness: 2,
+          indent: widget.screenWidth / 10,
+          endIndent: widget.screenWidth / 10,
+        ),
+        Expanded(
+          child: Align(
+            alignment: FractionalOffset.center,
+            child: CircleAvatar(
+              backgroundColor: Colors.grey.shade100,
+              child: IconButton(
+                icon: const Icon(FontAwesomeIcons.google),
+                onPressed: () async {
+                  if (await signInWithGoogle()) {
+                    Navigator.pushReplacementNamed(context, '/profile_page');
+                  }
+                },
+              ),
+            ),
+          ),
+        )
       ],
     );
   }
