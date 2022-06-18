@@ -1,4 +1,5 @@
 import 'package:ParkShield/globals.dart';
+import 'package:ParkShield/services/Firebase/FireDatabase/firedatabase.dart';
 import 'package:ParkShield/services/Firebase/FireStore/firestore.dart';
 import 'package:ParkShield/widgets/alerts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -18,6 +19,7 @@ class _NomineePageBodyState extends State<NomineePageBody> {
   List<String> vehicleIDs = ['None'];
   CollectionReference userVehicleDocs =
       userDocumentCollection(collection: 'vehicles');
+  bool isRefreshing = false;
 
   @override
   void initState() {
@@ -25,7 +27,7 @@ class _NomineePageBodyState extends State<NomineePageBody> {
     super.initState();
   }
 
-  void updateVehicleIDs() async {
+  Future<void> updateVehicleIDs() async {
     vehicleIDs = ['None'];
     _selectedText = 'None';
     List<String> tempVehicles = [];
@@ -45,12 +47,17 @@ class _NomineePageBodyState extends State<NomineePageBody> {
     setState(() {});
   }
 
-  int submitNomineeAddition() {
-    return 0;
+  Future<int> submitNomineeAddition(
+      {required String vehicleID, required String nominee}) async {
+    return await updateVehicleNominees(
+        vehicleID: int.parse(vehicleID), nominee: nominee);
   }
 
-  void _refresh() {
-    updateVehicleIDs();
+  Future<void> _refresh() async {
+    isRefreshing = !isRefreshing;
+    setState(() {});
+    await updateVehicleIDs();
+    isRefreshing = !isRefreshing;
   }
 
   @override
@@ -159,15 +166,21 @@ class _NomineePageBodyState extends State<NomineePageBody> {
                     textAlign: TextAlign.start,
                   ),
                 ),
-                Row(
+                Wrap(
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  alignment: WrapAlignment.center,
+                  spacing: screenWidth / 100,
                   children: [
                     vehicleIDAccept,
-                    IconButton(
-                        onPressed: () {
-                          _refresh();
-                          setState(() {});
-                        },
-                        icon: const Icon(Icons.refresh))
+                    isRefreshing
+                        ? const CircularProgressIndicator.adaptive()
+                        : IconButton(
+                            onPressed: () async {
+                              await _refresh();
+                              setState(() {});
+                            },
+                            icon: const Icon(Icons.refresh),
+                          ),
                   ],
                 ),
                 SizedBox(
@@ -179,7 +192,7 @@ class _NomineePageBodyState extends State<NomineePageBody> {
                       width: screenWidth / 2,
                       height: screenHeight / 17.5,
                       decoration: BoxDecoration(
-                        color: Colors.blue,
+                        color: Theme.of(context).colorScheme.primary,
                         borderRadius: BorderRadius.circular(screenWidth / 50),
                       ),
                       child: Center(
@@ -192,19 +205,45 @@ class _NomineePageBodyState extends State<NomineePageBody> {
                     ),
                     onTap: () async {
                       if (_selectedText != 'None') {
-                        submitNomineeAddition();
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext dialogContext) {
-                            return const MyAlertDialog(
-                              title: 'Nominee Added!',
-                              content: 'Okay',
-                              singleButton: 'popBack',
-                            );
-                          },
-                        );
+                        int responseCode = await submitNomineeAddition(
+                            vehicleID: _selectedText,
+                            nominee: uidController.text);
+                        if (responseCode == 1) {
+                          await showDialog(
+                            context: context,
+                            builder: (BuildContext dialogContext) {
+                              return const MyAlertDialog(
+                                title: 'Nominee Added!',
+                                content: 'Okay',
+                                singleButton: 'popBack',
+                              );
+                            },
+                          );
+                        } else if (responseCode == 0) {
+                          await showDialog(
+                            context: context,
+                            builder: (BuildContext dialogContext) {
+                              return const MyAlertDialog(
+                                title: "Vehicle doesn't exist",
+                                content: 'Hit refresh to update !',
+                                singleButton: 'popBack',
+                              );
+                            },
+                          );
+                        } else {
+                          await showDialog(
+                            context: context,
+                            builder: (BuildContext dialogContext) {
+                              return const MyAlertDialog(
+                                title: 'Nominee exists',
+                                content: 'Okay',
+                                singleButton: 'popBack',
+                              );
+                            },
+                          );
+                        }
                       } else {
-                        showDialog(
+                        await showDialog(
                           context: context,
                           builder: (BuildContext dialogContext) {
                             return const MyAlertDialog(

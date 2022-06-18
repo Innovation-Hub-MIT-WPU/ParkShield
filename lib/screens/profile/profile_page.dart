@@ -31,8 +31,10 @@ class _ProfilePageState extends State<ProfilePage> {
     final num screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
+      drawerEnableOpenDragGesture: false,
       drawer: const CommonDrawer(),
       appBar: AppBar(
+        // automaticallyImplyLeading: false,
         actions: [
           IconButton(onPressed: _refresh, icon: const Icon(Icons.refresh))
         ],

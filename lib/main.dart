@@ -1,4 +1,3 @@
-import 'package:ParkShield/screens/add_vehicles/add_vehicles_popup.dart';
 import 'package:flutter/material.dart';
 
 import 'package:ParkShield/globals.dart';
@@ -10,12 +9,17 @@ import 'package:ParkShield/screens/scan_vehicles/scan_vehicles_page.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:ParkShield/services/Firebase/firebase_options.dart';
+import 'package:flutter/services.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+    statusBarColor: Colors.transparent,
+  ));
   runApp(const MyApp());
 }
 

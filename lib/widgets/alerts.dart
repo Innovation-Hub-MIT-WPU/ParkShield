@@ -19,6 +19,10 @@ class MyAlertDialog extends StatelessWidget {
 
     if (singleButton == 'popBack') {
       return AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15),
+        ),
+        scrollable: true,
         backgroundColor: Colors.grey.shade300,
         title: FittedBox(
           fit: BoxFit.fitWidth,
@@ -29,26 +33,23 @@ class MyAlertDialog extends StatelessWidget {
           ),
         ),
         actions: actions,
-        content: SizedBox(
-          width: screenWidth / 5,
-          height: screenHeight / 20,
-          child: MaterialButton(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(screenWidth / 100),
-            ),
-            color: Colors.grey.shade200,
-            child: Text(
-              content,
-              style: Theme.of(context).textTheme.button,
-            ),
-            onPressed: () {
-              Navigator.pop(context);
-            },
+        content: MaterialButton(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
           ),
+          color: Colors.grey.shade200,
+          child: Text(
+            content,
+            style: Theme.of(context).textTheme.button,
+          ),
+          onPressed: () {
+            Navigator.pop(context);
+          },
         ),
       );
     } else {
       return AlertDialog(
+        scrollable: true,
         backgroundColor: Colors.grey.shade300,
         title: FittedBox(
           fit: BoxFit.fitWidth,

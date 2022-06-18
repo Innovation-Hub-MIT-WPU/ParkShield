@@ -43,6 +43,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '987178456656',
     projectId: 'parkshield-app',
     authDomain: 'parkshield-app.firebaseapp.com',
+    databaseURL:
+        "https://parkshield-app-default-rtdb.asia-southeast1.firebasedatabase.app/",
     storageBucket: 'parkshield-app.appspot.com',
     measurementId: 'G-D1PRFLHWQ7',
   );
@@ -51,6 +53,8 @@ class DefaultFirebaseOptions {
     apiKey: 'AIzaSyCH6InEhLJbEw1clmqpUs4LAzJJIfalSEQ',
     appId: '1:987178456656:android:6c695e033812b9c9912355',
     messagingSenderId: '987178456656',
+    databaseURL:
+        "https://parkshield-app-default-rtdb.asia-southeast1.firebasedatabase.app/",
     projectId: 'parkshield-app',
     storageBucket: 'parkshield-app.appspot.com',
   );
@@ -58,6 +62,8 @@ class DefaultFirebaseOptions {
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyAPhUm9d1XEVZnFTJiO53pNqQw77iXGpTk',
     appId: '1:987178456656:ios:ca0f27977dcd8bdd912355',
+    databaseURL:
+        "https://parkshield-app-default-rtdb.asia-southeast1.firebasedatabase.app/",
     messagingSenderId: '987178456656',
     projectId: 'parkshield-app',
     storageBucket: 'parkshield-app.appspot.com',

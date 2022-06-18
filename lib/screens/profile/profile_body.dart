@@ -106,10 +106,15 @@ class _ProfileBodyState extends State<ProfileBody> {
                                   elevation: 5,
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(
-                                      screenWidth / 10,
+                                      screenWidth / 20,
                                     ),
                                   ),
                                   child: ListTile(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(
+                                        screenWidth / 20,
+                                      ),
+                                    ),
                                     leading:
                                         (data['connectionStatus'].toString() ==
                                                 'Connected')
@@ -136,7 +141,8 @@ class _ProfileBodyState extends State<ProfileBody> {
                                   showDialog(
                                       context: context,
                                       builder: (context) =>
-                                          const CurrentLocationScreen());
+                                          CurrentLocationScreen(
+                                              vehicleID: data['vehicleID']));
                                 },
                               );
                             }).toList()

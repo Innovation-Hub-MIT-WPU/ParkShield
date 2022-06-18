@@ -1,6 +1,9 @@
+import 'package:ParkShield/services/Firebase/FireDatabase/firedatabase.dart';
 import 'package:ParkShield/services/Firebase/FireStore/firestore.dart';
+import 'package:ParkShield/widgets/alerts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class AddVehiclePopUp extends StatefulWidget {
   const AddVehiclePopUp({Key? key}) : super(key: key);
@@ -11,17 +14,36 @@ class AddVehiclePopUp extends StatefulWidget {
 
 class _AddVehiclePopUpState extends State<AddVehiclePopUp> {
   final TextEditingController vehicleIDTextController = TextEditingController();
-  Future<bool> onSubmitAciton() async {
+
+  // Method to submit the
+  Future<bool> onSubmitAciton({required BuildContext context}) async {
     final CollectionReference userVehicles =
         userDocumentCollection(collection: "vehicles");
     try {
       if (vehicleIDTextController.text == "") {
         return false;
       }
+
+      print("yo");
+
+      // Set up vehicle in database
+      if (await setVehicleDatabase(
+              vehicleID: int.parse(vehicleIDTextController.text)) ==
+          1) {
+        // Error in setting up vehicle
+        await showDialog(
+            context: context,
+            builder: (context) => const MyAlertDialog(
+                singleButton: 'popBack',
+                title: "Error occured !",
+                content: "Error in registering the vehicle !"));
+        return false;
+      }
       await userVehicles
           .doc(vehicleIDTextController.text)
           .set({'vehicleID': vehicleIDTextController.text});
 
+      Navigator.pop(context);
       return true;
     } catch (e) {
       return false;
@@ -30,9 +52,6 @@ class _AddVehiclePopUpState extends State<AddVehiclePopUp> {
 
   @override
   Widget build(BuildContext context) {
-    final num screenWidth = MediaQuery.of(context).size.width;
-    final num screenHeight = MediaQuery.of(context).size.height;
-
     final Card vehicleFormField = Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       elevation: 5,
@@ -41,7 +60,12 @@ class _AddVehiclePopUpState extends State<AddVehiclePopUp> {
           Icons.two_wheeler,
           color: Colors.grey,
         ),
-        title: TextField(
+        title: TextFormField(
+          validator: (value) {},
+          keyboardType: TextInputType.number,
+          inputFormatters: [
+            LengthLimitingTextInputFormatter(10),
+          ],
           obscureText: false,
           controller: vehicleIDTextController,
           decoration: InputDecoration(
@@ -63,7 +87,7 @@ class _AddVehiclePopUpState extends State<AddVehiclePopUp> {
       isExtended: true,
       icon: const Icon(Icons.add),
       onPressed: () async {
-        if (await onSubmitAciton()) {
+        if (await onSubmitAciton(context: context)) {
           vehicleIDTextController.text = "";
         }
       },
