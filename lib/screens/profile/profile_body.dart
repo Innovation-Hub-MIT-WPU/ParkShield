@@ -1,8 +1,9 @@
-import 'dart:math' as math;
+import 'dart:collection';
 
 import 'package:ParkShield/globals.dart';
 import 'package:ParkShield/screens/map_screen/map_page.dart';
 import 'package:ParkShield/services/Firebase/FireAuth/fireauth.dart';
+import 'package:ParkShield/services/Firebase/FireDatabase/firedatabase.dart';
 import 'package:ParkShield/services/Firebase/FireStore/firestore.dart';
 import 'package:flutter/material.dart';
 
@@ -17,8 +18,6 @@ class ProfileBody extends StatefulWidget {
 }
 
 class _ProfileBodyState extends State<ProfileBody> {
-  late Map<String, dynamic> userInfo;
-
   @override
   Widget build(BuildContext context) {
     precacheImage(const NetworkImage(DEFAULT_PROFILE_PICTURE), context);
@@ -101,50 +100,119 @@ class _ProfileBodyState extends State<ProfileBody> {
                               .map((DocumentSnapshot document) {
                               Map<String, dynamic> data =
                                   document.data()! as Map<String, dynamic>;
-                              return InkWell(
-                                child: Card(
-                                  elevation: 5,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(
-                                      screenWidth / 20,
-                                    ),
-                                  ),
-                                  child: ListTile(
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        screenWidth / 20,
-                                      ),
-                                    ),
-                                    leading:
-                                        (data['connectionStatus'].toString() ==
-                                                'Connected')
-                                            ? const Icon(
-                                                Icons.check_rounded,
-                                                color: Colors.green,
-                                              )
-                                            : Transform.rotate(
-                                                angle: math.pi / 4,
-                                                child: const Icon(
-                                                  Icons.add,
-                                                  color: Colors.red,
+
+                              return FutureBuilder<Map>(
+                                  future: readVehicleDatabase(
+                                      vehicleID: int.parse(data['vehicleID'])),
+                                  builder: (BuildContext context,
+                                      AsyncSnapshot<Map> internalSnapshot) {
+                                    if (internalSnapshot.hasData) {
+                                      List<ListTile> vehicleData = [];
+                                      for (dynamic key
+                                          in internalSnapshot.data!.keys) {
+                                        dynamic internalData =
+                                            internalSnapshot.data![key];
+                                        if (internalData.runtimeType == bool) {
+                                          vehicleData.add(ListTile(
+                                            leading: Icon(
+                                              internalSnapshot.data![key]
+                                                  ? Icons.check
+                                                  : Icons.close,
+                                              color: internalSnapshot.data![key]
+                                                  ? Colors.green
+                                                  : Colors.red,
+                                            ),
+                                            onTap: () {},
+                                            title: Text(
+                                              key.toString(),
+                                              style: const TextStyle(
+                                                fontSize: 24,
+                                              ),
+                                            ),
+                                            subtitle:
+                                                Text(internalData.toString()),
+                                          ));
+                                        } else if (internalData.runtimeType ==
+                                            List<Object?>) {
+                                          vehicleData.addAll([
+                                            ListTile(
+                                              leading: const Icon(
+                                                Icons.list_alt_rounded,
+                                              ),
+                                              onTap: () {},
+                                              title: Text(
+                                                key.toString(),
+                                                style: const TextStyle(
+                                                  fontSize: 24,
                                                 ),
                                               ),
-                                    tileColor: MAIN_COLOR_THEME['secondary'],
-                                    title: Text(
-                                      "VehicleID: ${data['vehicleID']}",
-                                      style:
-                                          Theme.of(context).textTheme.headline3,
-                                    ),
-                                  ),
-                                ),
-                                onTap: () {
-                                  showDialog(
-                                      context: context,
-                                      builder: (context) =>
-                                          CurrentLocationScreen(
-                                              vehicleID: data['vehicleID']));
-                                },
-                              );
+                                              subtitle: Wrap(
+                                                runSpacing: 10,
+                                                children: (internalData as List)
+                                                    .map(
+                                                      (e) => Text(
+                                                        "⬤ " + e.toString(),
+                                                      ),
+                                                    )
+                                                    .toList(),
+                                              ),
+                                            ),
+                                          ]);
+                                        }
+                                      }
+                                      return Card(
+                                        elevation: 5,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            screenWidth / 50,
+                                          ),
+                                        ),
+                                        child: ExpansionTile(
+                                          backgroundColor: Theme.of(context)
+                                              .colorScheme
+                                              .secondary,
+                                          leading:
+                                              const Icon(Icons.two_wheeler),
+                                          title: Text(
+                                            "VehicleID: ${data['vehicleID']}",
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .headline3,
+                                          ),
+                                          childrenPadding:
+                                              const EdgeInsets.symmetric(
+                                                  horizontal: 2),
+                                          children: [
+                                                ListTile(
+                                                  tileColor: Theme.of(context)
+                                                      .colorScheme
+                                                      .secondary,
+                                                  leading: const Icon(
+                                                      Icons.location_on),
+                                                  onTap: () {
+                                                    Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            CurrentLocationScreen(
+                                                                vehicleID: data[
+                                                                    'vehicleID']),
+                                                      ),
+                                                    );
+                                                  },
+                                                  title: const Text(
+                                                      "Show location"),
+                                                ),
+                                              ] +
+                                              vehicleData,
+                                        ),
+                                      );
+                                    } else {
+                                      return const Align(
+                                          alignment: Alignment.center,
+                                          child: CircularProgressIndicator());
+                                    }
+                                  });
                             }).toList()
                           : [
                               const Align(

@@ -25,25 +25,32 @@ class _AddVehiclePopUpState extends State<AddVehiclePopUp> {
       }
 
       print("yo");
-
+      int responseCode = await setVehicleDatabase(
+          vehicleID: int.parse(vehicleIDTextController.text));
       // Set up vehicle in database
-      if (await setVehicleDatabase(
-              vehicleID: int.parse(vehicleIDTextController.text)) ==
-          1) {
+      if (responseCode == 0) {
         // Error in setting up vehicle
         await showDialog(
             context: context,
             builder: (context) => const MyAlertDialog(
                 singleButton: 'popBack',
                 title: "Error occured !",
-                content: "Error in registering the vehicle !"));
+                content: "Okay"));
         return false;
-      }
-      await userVehicles
-          .doc(vehicleIDTextController.text)
-          .set({'vehicleID': vehicleIDTextController.text});
+      } else if (responseCode == -1) {
+        await showDialog(
+            context: context,
+            builder: (context) => const MyAlertDialog(
+                singleButton: 'popBack',
+                title: "Vehicle already registered !",
+                content: "Okay"));
+      } else {
+        await userVehicles
+            .doc(vehicleIDTextController.text)
+            .set({'vehicleID': vehicleIDTextController.text});
 
-      Navigator.pop(context);
+        Navigator.pop(context);
+      }
       return true;
     } catch (e) {
       return false;

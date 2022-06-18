@@ -33,7 +33,7 @@ Future<int> updateVehicleNominees({
   return 1;
 }
 
-// Read Vehicle Database
+// Read Vehicle Coordinates
 Future<List<double>> readVehicleCoordinates({
   required int vehicleID,
   bool removeNominee = false,
@@ -56,6 +56,35 @@ Future<List<double>> readVehicleCoordinates({
     double.parse(gps["lat"].toString()),
     double.parse(gps["lon"].toString()),
   ];
+}
+
+// Read Vehicle Coordinates
+Future<Map> readVehicleDatabase({
+  required int vehicleID,
+  bool removeNominee = false,
+}) async {
+  // Database reference
+  final DatabaseReference database =
+      FirebaseDatabase.instance.ref("vehicles/$vehicleID");
+
+  // Vehicle doesn't exist check
+  if (!(await database.get()).exists) {
+    print("Vehicle doesn't exist");
+    return LinkedHashMap.from({"exists": -1});
+  }
+
+  // Get list of previous nominees
+  LinkedHashMap completeDatabase =
+      ((await database.once()).snapshot.value! as LinkedHashMap);
+
+  Map toBeSent = {
+    "isOn": completeDatabase["isOn"],
+    "isTampered": completeDatabase["isTampered"],
+    "isParked": completeDatabase["isParked"],
+    "ultrasonic": completeDatabase["ultrasonic"],
+    "nominees": completeDatabase["nominees"],
+  };
+  return toBeSent;
 }
 
 // Set Vehicle Database

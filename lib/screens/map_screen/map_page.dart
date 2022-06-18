@@ -70,7 +70,7 @@ class CurrentLocationScreenState extends State<CurrentLocationScreen> {
     try {
       // Get user's current location
       await BitmapDescriptor.fromAssetImage(
-              const ImageConfiguration(size: Size(2, 2)), "assets/img/bike.png")
+              const ImageConfiguration(size: Size(4, 4)), "assets/img/bike.png")
           .then((d) {
         bikeIcon = d;
       });
@@ -160,17 +160,27 @@ class CurrentLocationScreenState extends State<CurrentLocationScreen> {
         centerTitle: true,
       ),
       body: !locationsHaveLoaded
-          ? const CircularProgressIndicator()
+          ? const Align(
+              alignment: Alignment.center, child: CircularProgressIndicator())
           : GoogleMap(
               mapType: MapType.normal,
               markers: {
                 Marker(
                     markerId: MarkerId(widget.vehicleID),
                     icon: bikeIcon,
+                    infoWindow: const InfoWindow(
+                        title: "Vehicle", snippet: "Your vehicle's location"),
                     position: LatLng(
-                        _vehicleLocationData[0], _vehicleLocationData[1]))
+                        _vehicleLocationData[0], _vehicleLocationData[1])),
+                Marker(
+                    markerId: MarkerId(widget.vehicleID),
+                    icon: BitmapDescriptor.defaultMarker,
+                    infoWindow: const InfoWindow(
+                        title: "You", snippet: "Your location"),
+                    position: LatLng(_myLocationData.latitude as double,
+                        _myLocationData.longitude as double))
               },
-              myLocationEnabled: true,
+              myLocationEnabled: false,
               myLocationButtonEnabled: false,
               initialCameraPosition: CameraPosition(
                 target: LatLng(_myLocationData.latitude as double,
@@ -188,13 +198,15 @@ class CurrentLocationScreenState extends State<CurrentLocationScreen> {
                 );
               },
             ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
       floatingActionButton: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 35),
+        padding: const EdgeInsets.symmetric(horizontal: 15),
         child: SizedBox(
           width: screenWidth * 0.9,
           child: Wrap(
+            spacing: 10,
             alignment: WrapAlignment.spaceBetween,
+            direction: Axis.vertical,
             children: [
               FloatingActionButton(
                 onPressed: () async {

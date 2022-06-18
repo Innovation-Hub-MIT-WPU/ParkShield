@@ -1,5 +1,5 @@
 import 'package:ParkShield/globals.dart';
-import 'package:ParkShield/screens/add_vehicles/add_vehicles_popup.dart';
+import 'package:ParkShield/screens/profile/add_vehicles_popup.dart';
 import 'package:ParkShield/screens/profile/profile_body.dart';
 import 'package:ParkShield/widgets/drawer.dart';
 import 'package:flutter/material.dart';
