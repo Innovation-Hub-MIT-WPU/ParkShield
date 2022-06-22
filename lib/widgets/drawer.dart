@@ -1,7 +1,5 @@
 import 'package:ParkShield/globals.dart';
 import 'package:ParkShield/services/Firebase/FireAuth/fireauth.dart';
-import 'package:ParkShield/services/Firebase/FireStore/firestore.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -85,8 +83,15 @@ class _CommonDrawerState extends State<CommonDrawer> {
                             color: MAIN_COLOR_THEME['primary'],
                             shape: const RoundedRectangleBorder(
                               borderRadius: BorderRadius.horizontal(
-                                  right: Radius.elliptical(400, 900),
-                                  left: Radius.elliptical(200, 200)),
+                                right: Radius.elliptical(
+                                  400,
+                                  900,
+                                ),
+                                left: Radius.elliptical(
+                                  200,
+                                  200,
+                                ),
+                              ),
                             ),
                             child: Padding(
                               padding:
@@ -105,16 +110,23 @@ class _CommonDrawerState extends State<CommonDrawer> {
                       ),
                       onTap: () async {
                         if (l[1] != '/login_register_page') {
-                          Navigator.pushReplacementNamed(
-                            context,
-                            l[1],
-                          );
+                          if (ModalRoute.of(context)!.settings.name != l[1]) {
+                            Navigator.pushNamed(
+                              context,
+                              l[1],
+                            );
+                          } else {
+                            Navigator.pop(context);
+                          }
                         } else {
                           await signOut();
                           await signOutGoogle();
-                          Navigator.pushReplacementNamed(
+                          Navigator.pushNamedAndRemoveUntil(
                             context,
                             l[1],
+                            (route) {
+                              return false;
+                            },
                           );
                         }
                       },

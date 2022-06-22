@@ -47,13 +47,14 @@ class _ProfilePageState extends State<ProfilePage> {
         centerTitle: true,
       ),
       body: profileBody,
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton.extended(
         onPressed: () async {
           await showDialog(
               context: context, builder: (context) => const AddVehiclePopUp());
         },
         backgroundColor: Theme.of(context).colorScheme.primary,
-        child: const Icon(Icons.add),
+        icon: const Icon(Icons.add),
+        label: const Text("Add Vehicle"),
       ),
     );
   }

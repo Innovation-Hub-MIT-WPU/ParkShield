@@ -2,7 +2,8 @@
 import 'dart:convert';
 
 import 'package:ParkShield/globals.dart';
-import 'package:ParkShield/screens/scan_vehicles/browser.dart';
+import 'package:ParkShield/services/Firebase/FireAuth/fireauth.dart';
+
 import 'package:ParkShield/widgets/drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -26,7 +27,7 @@ class ScanVehiclesBody extends StatefulWidget {
 }
 
 class _ScanVehiclesBodyState extends State<ScanVehiclesBody> {
-  final MyInAppBrowser browser = new MyInAppBrowser();
+  final String userID = getCurrentUserId();
   var options = InAppBrowserClassOptions(
       crossPlatform: InAppBrowserOptions(hideUrlBar: false),
       inAppWebViewGroupOptions: InAppWebViewGroupOptions(
@@ -38,7 +39,7 @@ class _ScanVehiclesBodyState extends State<ScanVehiclesBody> {
   bool _isEnabled = false;
   bool withInternet = false;
   bool _isConnected = false;
-  bool vehicleState = false;
+  int vehicleState = -1;
   bool _isWifiDisableOpenSettings = true;
   bool _isWifiEnableOpenSettings = true;
 
@@ -261,8 +262,8 @@ class _ScanVehiclesBodyState extends State<ScanVehiclesBody> {
                       while (await WiFiForIoTPlugin.isConnected() != true);
                       Future.delayed(const Duration(seconds: 2), () async {
                         print("THIS IS HTTP");
-                        print(await http
-                            .get(Uri.parse('http://192.168.4.1/2/on')));
+                        print(await http.get(Uri.parse(
+                            'http://192.168.4.1/2/on?userID=$userID')));
                         if (withInternet) {
                           Navigator.pop(dialogContextDefault);
                         }
@@ -414,7 +415,12 @@ class _ScanVehiclesBodyState extends State<ScanVehiclesBody> {
           ),
           MaterialButton(
             color: const Color(0xFFC1F0F6),
-            child: Text("Turn " + (vehicleState ? "on" : "off") + " vehicle",
+            child: Text(
+                vehicleState != -1
+                    ? ("Turn " +
+                        (vehicleState == 0 ? "on" : "off") +
+                        " vehicle")
+                    : "Check the vehicle state",
                 style: textStyle),
             onPressed: () async {
               print("Getting state");
@@ -426,12 +432,18 @@ class _ScanVehiclesBodyState extends State<ScanVehiclesBody> {
               print(response.body);
               Map<String, dynamic> jsonResponse = jsonDecode(response.body);
               print(jsonResponse);
-              if (jsonResponse["state"] == 0) {
-                await http.get(Uri.parse("http://192.168.4.1/2/on"));
-                vehicleState = false;
+              if (vehicleState == -1) {
+                vehicleState = jsonResponse["state"] == 0 ? 0 : 1;
               } else {
-                await http.get(Uri.parse("http://192.168.4.1/2/off"));
-                vehicleState = true;
+                if (jsonResponse["state"] == 0) {
+                  await http
+                      .get(Uri.parse("http://192.168.4.1/2/on?userID=$userID"));
+                  vehicleState = 0;
+                } else {
+                  await http.get(
+                      Uri.parse("http://192.168.4.1/2/off?userID=$userID"));
+                  vehicleState = 1;
+                }
               }
               setState(() {});
             },

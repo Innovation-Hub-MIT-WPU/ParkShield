@@ -1,4 +1,4 @@
-package com.example.parkshield
+package com.rushour0.parkshield
 
 import io.flutter.embedding.android.FlutterActivity
 

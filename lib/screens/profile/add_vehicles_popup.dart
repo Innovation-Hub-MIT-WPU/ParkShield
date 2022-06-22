@@ -67,23 +67,33 @@ class _AddVehiclePopUpState extends State<AddVehiclePopUp> {
           Icons.two_wheeler,
           color: Colors.grey,
         ),
-        title: TextFormField(
-          validator: (value) {},
-          keyboardType: TextInputType.number,
-          inputFormatters: [
-            LengthLimitingTextInputFormatter(10),
-          ],
-          obscureText: false,
-          controller: vehicleIDTextController,
-          decoration: InputDecoration(
-            filled: false,
-            hintText: 'Vehicle ID',
-            hintStyle: TextStyle(
-              color: Colors.grey.shade400,
+        title: Form(
+          autovalidateMode: AutovalidateMode.always,
+          child: TextFormField(
+            validator: (value) {
+              if (value!.length != 10) {
+                return "Length should be 10";
+              } else {
+                return null;
+              }
+            },
+            keyboardType: TextInputType.number,
+            inputFormatters: [
+              LengthLimitingTextInputFormatter(10),
+              FilteringTextInputFormatter.digitsOnly,
+            ],
+            obscureText: false,
+            controller: vehicleIDTextController,
+            decoration: InputDecoration(
+              filled: false,
+              hintText: 'Vehicle ID',
+              hintStyle: TextStyle(
+                color: Colors.grey.shade400,
+              ),
+              focusedBorder: InputBorder.none,
+              enabledBorder: InputBorder.none,
+              disabledBorder: InputBorder.none,
             ),
-            focusedBorder: InputBorder.none,
-            enabledBorder: InputBorder.none,
-            disabledBorder: InputBorder.none,
           ),
         ),
       ),

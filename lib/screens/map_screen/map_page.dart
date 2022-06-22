@@ -173,7 +173,7 @@ class CurrentLocationScreenState extends State<CurrentLocationScreen> {
                     position: LatLng(
                         _vehicleLocationData[0], _vehicleLocationData[1])),
                 Marker(
-                    markerId: MarkerId(widget.vehicleID),
+                    markerId: const MarkerId("You"),
                     icon: BitmapDescriptor.defaultMarker,
                     infoWindow: const InfoWindow(
                         title: "You", snippet: "Your location"),
@@ -209,6 +209,7 @@ class CurrentLocationScreenState extends State<CurrentLocationScreen> {
             direction: Axis.vertical,
             children: [
               FloatingActionButton(
+                heroTag: "h1",
                 onPressed: () async {
                   goToDeviceLocation();
                 },
@@ -216,6 +217,7 @@ class CurrentLocationScreenState extends State<CurrentLocationScreen> {
                 child: const Icon(Icons.location_on),
               ),
               FloatingActionButton(
+                heroTag: "h2",
                 onPressed: () async {
                   goToVehicleLocation();
                 },

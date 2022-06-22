@@ -10,53 +10,69 @@ class Splash extends StatefulWidget {
   _SplashState createState() => _SplashState();
 }
 
-class _SplashState extends State<Splash> {
-  @override
-  void initState() {
-    super.initState();
-    _navigatehome();
-  }
+class _SplashState extends State<Splash> with TickerProviderStateMixin {
+  late final AnimationController _controller = AnimationController(
+    duration: const Duration(seconds: 2),
+    vsync: this,
+    value: 1,
+  )
+    ..forward(from: 0)
+    ..addStatusListener(
+      (status) {
+        if (status == AnimationStatus.completed) {
+          if (checkLoggedIn()) {
+            Navigator.pushReplacementNamed(context, '/profile_page');
+          } else {
+            Navigator.pushReplacementNamed(context, '/login_register_page');
+          }
+        }
+      },
+    );
 
-  // Delay to go to landing page
-  _navigatehome() async {
-    await Future.delayed(const Duration(milliseconds: 1500), () {});
-    if (checkLoggedIn()) {
-      Navigator.pushReplacementNamed(context, '/profile_page');
-    } else {
-      Navigator.pushReplacementNamed(context, '/login_register_page');
-    }
+  late final Animation<double> _animation = CurvedAnimation(
+    parent: _controller,
+    curve: Curves.fastOutSlowIn,
+  );
+
+  @override
+  void dispose() {
+    super.dispose();
+    _controller.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     precacheImage(const AssetImage(APP_ICON), context);
     return Scaffold(
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[
-          Center(
-            child: SizedBox(
-              height: MediaQuery.of(context).size.width / 3,
-              child: Image.asset(
-                APP_ICON,
-                fit: BoxFit.contain,
+      body: ScaleTransition(
+        scale: _animation,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            Center(
+              child: SizedBox(
+                height: MediaQuery.of(context).size.width / 3,
+                child: Image.asset(
+                  APP_ICON,
+                  fit: BoxFit.contain,
+                ),
               ),
             ),
-          ),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: Container(
-              padding: const EdgeInsets.all(16.0),
-              child: Text(
-                widget.title,
-                style: Theme.of(context).textTheme.headline2,
-                textAlign: TextAlign.center,
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Container(
+                padding: const EdgeInsets.all(16.0),
+                child: Text(
+                  widget.title,
+                  style: Theme.of(context).textTheme.headline2,
+                  textAlign: TextAlign.center,
+                ),
+                alignment: Alignment.center,
               ),
-              alignment: Alignment.center,
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
